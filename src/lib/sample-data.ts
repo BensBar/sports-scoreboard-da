@@ -92,7 +92,270 @@ export const sampleNFLGames: Game[] = [
         headline: 'Josh Allen leads the NFL with 32 passing touchdowns this season'
       }, {
         headline: 'Chiefs defense ranks 3rd in the league, allowing just 18.2 PPG'
-      }]
+      }],
+      leaders: [{
+        passing: {
+          playerId: '3139477',
+          name: 'P. Mahomes',
+          headshot: 'https://a.espncdn.com/i/headshots/nfl/players/full/3139477.png',
+          stats: '185 YDS, 2 TD',
+          position: 'QB'
+        },
+        rushing: {
+          playerId: '4241457',
+          name: 'I. Pacheco',
+          headshot: 'https://a.espncdn.com/i/headshots/nfl/players/full/4241457.png',
+          stats: '67 YDS, 1 TD',
+          position: 'RB'
+        },
+        receiving: {
+          playerId: '3116593',
+          name: 'T. Kelce',
+          headshot: 'https://a.espncdn.com/i/headshots/nfl/players/full/3116593.png',
+          stats: '5 REC, 78 YDS',
+          position: 'TE'
+        }
+      }, {
+        passing: {
+          playerId: '3918298',
+          name: 'J. Allen',
+          headshot: 'https://a.espncdn.com/i/headshots/nfl/players/full/3918298.png',
+          stats: '142 YDS, 1 TD',
+          position: 'QB'
+        },
+        rushing: {
+          playerId: '4241986',
+          name: 'J. Cook',
+          headshot: 'https://a.espncdn.com/i/headshots/nfl/players/full/4241986.png',
+          stats: '45 YDS',
+          position: 'RB'
+        },
+        receiving: {
+          playerId: '4035687',
+          name: 'S. Diggs',
+          headshot: 'https://a.espncdn.com/i/headshots/nfl/players/full/4035687.png',
+          stats: '6 REC, 89 YDS, 1 TD',
+          position: 'WR'
+        }
+      }],
+      statistics: {
+        'team-1': [
+          { name: 'Total Yards', displayValue: '252' },
+          { name: 'Passing Yards', displayValue: '185' },
+          { name: 'Rushing Yards', displayValue: '67' },
+          { name: 'Turnovers', displayValue: '0' },
+          { name: 'Time of Possession', displayValue: '16:22' }
+        ],
+        'team-2': [
+          { name: 'Total Yards', displayValue: '187' },
+          { name: 'Passing Yards', displayValue: '142' },
+          { name: 'Rushing Yards', displayValue: '45' },
+          { name: 'Turnovers', displayValue: '1' },
+          { name: 'Time of Possession', displayValue: '13:38' }
+        ]
+      },
+      drives: [
+        {
+          id: 'drive-1',
+          description: '7 plays, 75 yards, 3:24',
+          team: {
+            name: 'Chiefs',
+            abbreviation: 'KC'
+          },
+          start: {
+            period: { number: 1 },
+            clock: { displayValue: '12:45' }
+          },
+          end: {
+            period: { number: 1 },
+            clock: { displayValue: '9:21' }
+          },
+          result: 'Touchdown',
+          plays: [
+            {
+              id: 'play-1',
+              type: { text: 'Rush' },
+              text: 'I. Pacheco rush to the left for 8 yards',
+              homeScore: 0,
+              awayScore: 0,
+              period: { number: 1 },
+              clock: { displayValue: '12:45' },
+              team: { id: 'kc' }
+            },
+            {
+              id: 'play-2',
+              type: { text: 'Pass' },
+              text: 'P. Mahomes pass complete to T. Kelce for 15 yards',
+              homeScore: 0,
+              awayScore: 0,
+              period: { number: 1 },
+              clock: { displayValue: '12:10' },
+              team: { id: 'kc' }
+            },
+            {
+              id: 'play-3',
+              type: { text: 'Pass' },
+              text: 'P. Mahomes pass complete to M. Hardman for 22 yards',
+              homeScore: 0,
+              awayScore: 0,
+              period: { number: 1 },
+              clock: { displayValue: '11:35' },
+              team: { id: 'kc' }
+            },
+            {
+              id: 'play-4',
+              type: { text: 'Rush' },
+              text: 'I. Pacheco rush up the middle for 18 yards',
+              homeScore: 0,
+              awayScore: 0,
+              period: { number: 1 },
+              clock: { displayValue: '10:52' },
+              team: { id: 'kc' }
+            },
+            {
+              id: 'play-5',
+              type: { text: 'Pass' },
+              text: 'P. Mahomes pass complete to J. Smith-Schuster for 12 yards. TOUCHDOWN',
+              homeScore: 0,
+              awayScore: 7,
+              period: { number: 1 },
+              clock: { displayValue: '9:21' },
+              scoringPlay: true,
+              team: { id: 'kc' }
+            }
+          ]
+        },
+        {
+          id: 'drive-2',
+          description: '8 plays, 68 yards, 4:12',
+          team: {
+            name: 'Bills',
+            abbreviation: 'BUF'
+          },
+          start: {
+            period: { number: 1 },
+            clock: { displayValue: '9:21' }
+          },
+          end: {
+            period: { number: 1 },
+            clock: { displayValue: '5:09' }
+          },
+          result: 'Touchdown',
+          plays: [
+            {
+              id: 'play-6',
+              type: { text: 'Pass' },
+              text: 'J. Allen pass complete to S. Diggs for 18 yards',
+              homeScore: 7,
+              awayScore: 7,
+              period: { number: 1 },
+              clock: { displayValue: '9:15' },
+              team: { id: 'buf' }
+            },
+            {
+              id: 'play-7',
+              type: { text: 'Rush' },
+              text: 'J. Cook rush to the right for 12 yards',
+              homeScore: 7,
+              awayScore: 7,
+              period: { number: 1 },
+              clock: { displayValue: '8:42' },
+              team: { id: 'buf' }
+            },
+            {
+              id: 'play-8',
+              type: { text: 'Pass' },
+              text: 'J. Allen pass complete to D. Knox for 9 yards',
+              homeScore: 7,
+              awayScore: 7,
+              period: { number: 1 },
+              clock: { displayValue: '8:10' },
+              team: { id: 'buf' }
+            },
+            {
+              id: 'play-9',
+              type: { text: 'Pass' },
+              text: 'J. Allen pass complete to S. Diggs for 29 yards. TOUCHDOWN',
+              homeScore: 7,
+              awayScore: 7,
+              period: { number: 1 },
+              clock: { displayValue: '5:09' },
+              scoringPlay: true,
+              team: { id: 'buf' }
+            }
+          ]
+        },
+        {
+          id: 'drive-3',
+          description: '10 plays, 82 yards, 5:28',
+          team: {
+            name: 'Chiefs',
+            abbreviation: 'KC'
+          },
+          start: {
+            period: { number: 2 },
+            clock: { displayValue: '14:45' }
+          },
+          end: {
+            period: { number: 2 },
+            clock: { displayValue: '9:17' }
+          },
+          result: 'Touchdown',
+          plays: [
+            {
+              id: 'play-10',
+              type: { text: 'Pass' },
+              text: 'P. Mahomes pass complete to T. Kelce for 14 yards',
+              homeScore: 7,
+              awayScore: 7,
+              period: { number: 2 },
+              clock: { displayValue: '14:45' },
+              team: { id: 'kc' }
+            },
+            {
+              id: 'play-11',
+              type: { text: 'Rush' },
+              text: 'I. Pacheco rush up the middle for 11 yards',
+              homeScore: 7,
+              awayScore: 7,
+              period: { number: 2 },
+              clock: { displayValue: '14:12' },
+              team: { id: 'kc' }
+            },
+            {
+              id: 'play-12',
+              type: { text: 'Pass' },
+              text: 'P. Mahomes pass complete to M. Valdes-Scantling for 27 yards',
+              homeScore: 7,
+              awayScore: 7,
+              period: { number: 2 },
+              clock: { displayValue: '13:35' },
+              team: { id: 'kc' }
+            },
+            {
+              id: 'play-13',
+              type: { text: 'Rush' },
+              text: 'I. Pacheco rush to the left for 18 yards',
+              homeScore: 7,
+              awayScore: 7,
+              period: { number: 2 },
+              clock: { displayValue: '12:48' },
+              team: { id: 'kc' }
+            },
+            {
+              id: 'play-14',
+              type: { text: 'Pass' },
+              text: 'P. Mahomes pass complete to T. Kelce for 12 yards. TOUCHDOWN',
+              homeScore: 7,
+              awayScore: 14,
+              period: { number: 2 },
+              clock: { displayValue: '9:17' },
+              scoringPlay: true,
+              team: { id: 'kc' }
+            }
+          ]
+        }
+      ]
     }]
   },
   {

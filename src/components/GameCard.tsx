@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Clock, Timer, FlipHorizontal, MapPin, Television, TrendUp, ArrowsOut } from '@phosphor-icons/react';
+import { Clock, Timer, FlipHorizontal, MapPin, Television, TrendUp, ArrowsOut, User, ChartBar, ListDashes } from '@phosphor-icons/react';
 import { Game } from '@/types/sports';
 import { 
   getTeamScore, 
@@ -51,6 +51,9 @@ export function GameCard({ game }: GameCardProps) {
   const broadcasts = competition.broadcasts;
   const odds = competition.odds?.[0];
   const notes = competition.notes;
+  const leaders = competition.leaders;
+  const statistics = competition.statistics;
+  const drives = competition.drives;
   
   const isLive = status.type.state === 'in';
   const isUpcoming = status.type.state === 'pre';
@@ -406,6 +409,112 @@ export function GameCard({ game }: GameCardProps) {
                           </div>
                         </div>
                       )}
+
+                      {/* Team Statistics */}
+                      {statistics && (isLive || isCompleted) && (
+                        <div className="space-y-3 p-4 bg-muted/30 rounded-lg">
+                          <div className="font-semibold text-muted-foreground uppercase text-xs flex items-center">
+                            <ChartBar className="w-4 h-4 mr-1" />
+                            Team Statistics
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-6">
+                            {/* Team 1 Stats */}
+                            <div className="space-y-2">
+                              <div className="font-semibold text-sm mb-3">{team1?.team?.abbreviation}</div>
+                              {statistics['team-1']?.map((stat, idx) => (
+                                <div key={idx} className="flex justify-between text-sm">
+                                  <span className="text-muted-foreground">{stat.name}</span>
+                                  <span className="font-medium">{stat.displayValue}</span>
+                                </div>
+                              ))}
+                            </div>
+                            
+                            {/* Team 2 Stats */}
+                            <div className="space-y-2">
+                              <div className="font-semibold text-sm mb-3">{team2?.team?.abbreviation}</div>
+                              {statistics['team-2']?.map((stat, idx) => (
+                                <div key={idx} className="flex justify-between text-sm">
+                                  <span className="text-muted-foreground">{stat.name}</span>
+                                  <span className="font-medium">{stat.displayValue}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Play-by-Play Timeline */}
+                      {drives && drives.length > 0 && (isLive || isCompleted) && (
+                        <div className="space-y-4">
+                          <div className="font-semibold text-muted-foreground uppercase text-xs flex items-center">
+                            <ListDashes className="w-4 h-4 mr-1" />
+                            Play-by-Play
+                          </div>
+                          
+                          <div className="space-y-4 max-h-96 overflow-y-auto">
+                            {drives.map((drive) => (
+                              <div key={drive.id} className="border-l-2 border-muted pl-4 space-y-2">
+                                {/* Drive Header */}
+                                <div className="flex items-start justify-between gap-2 sticky top-0 bg-background py-1">
+                                  <div className="font-semibold text-sm">
+                                    {drive.team.abbreviation} - {drive.description}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground whitespace-nowrap">
+                                    Q{drive.start.period.number} {drive.start.clock.displayValue}
+                                  </div>
+                                </div>
+                                
+                                {/* Drive Result */}
+                                {drive.result && (
+                                  <div className={`text-xs font-medium px-2 py-1 rounded inline-block ${
+                                    drive.result === 'Touchdown' 
+                                      ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
+                                      : drive.result === 'Field Goal'
+                                      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                                      : 'bg-muted text-muted-foreground'
+                                  }`}>
+                                    {drive.result}
+                                  </div>
+                                )}
+                                
+                                {/* Plays */}
+                                <div className="space-y-1.5">
+                                  {drive.plays.map((play) => (
+                                    <div 
+                                      key={play.id} 
+                                      className={`text-xs p-2 rounded ${
+                                        play.scoringPlay 
+                                          ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' 
+                                          : 'bg-muted/30'
+                                      }`}
+                                    >
+                                      <div className="flex items-start justify-between gap-2">
+                                        <div className="flex-1">
+                                          <span className="font-medium text-muted-foreground">
+                                            {play.type.text}:
+                                          </span>{' '}
+                                          <span className={play.scoringPlay ? 'font-semibold' : ''}>
+                                            {play.text}
+                                          </span>
+                                        </div>
+                                        <div className="text-muted-foreground whitespace-nowrap text-[10px]">
+                                          {play.clock.displayValue}
+                                        </div>
+                                      </div>
+                                      {play.scoringPlay && (
+                                        <div className="mt-1 text-[10px] font-semibold text-green-600 dark:text-green-400">
+                                          Score: {team1?.team?.id === play.team?.id ? play.awayScore : play.homeScore} - {team2?.team?.id === play.team?.id ? play.awayScore : play.homeScore}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -430,6 +539,96 @@ export function GameCard({ game }: GameCardProps) {
                   </span>
                 </div>
               </div>
+
+              {/* Player Leaders */}
+              {leaders && leaders.length > 0 && (isLive || isCompleted) && (
+                <div className="space-y-3 border-t pt-3">
+                  <div className="font-semibold text-muted-foreground uppercase text-xs flex items-center">
+                    <User className="w-3 h-3 mr-1" />
+                    Player Leaders
+                  </div>
+                  
+                  {leaders.map((teamLeaders, idx) => (
+                    <div key={idx} className="space-y-2">
+                      <div className="font-medium text-xs text-muted-foreground">
+                        {idx === 0 ? team1?.team?.abbreviation : team2?.team?.abbreviation}
+                      </div>
+                      
+                      {teamLeaders.passing && (
+                        <div className="flex items-center gap-2 text-xs bg-muted/30 p-2 rounded">
+                          <div className="flex items-center gap-2 flex-1">
+                            {teamLeaders.passing.headshot && (
+                              <img 
+                                src={teamLeaders.passing.headshot} 
+                                alt={teamLeaders.passing.name}
+                                className="w-8 h-8 rounded-full object-cover bg-muted"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            )}
+                            <div>
+                              <div className="font-medium">{teamLeaders.passing.name}</div>
+                              <div className="text-muted-foreground text-xs">{teamLeaders.passing.position}</div>
+                            </div>
+                          </div>
+                          <div className="text-right text-xs font-medium">
+                            {teamLeaders.passing.stats}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {teamLeaders.rushing && (
+                        <div className="flex items-center gap-2 text-xs bg-muted/30 p-2 rounded">
+                          <div className="flex items-center gap-2 flex-1">
+                            {teamLeaders.rushing.headshot && (
+                              <img 
+                                src={teamLeaders.rushing.headshot} 
+                                alt={teamLeaders.rushing.name}
+                                className="w-8 h-8 rounded-full object-cover bg-muted"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            )}
+                            <div>
+                              <div className="font-medium">{teamLeaders.rushing.name}</div>
+                              <div className="text-muted-foreground text-xs">{teamLeaders.rushing.position}</div>
+                            </div>
+                          </div>
+                          <div className="text-right text-xs font-medium">
+                            {teamLeaders.rushing.stats}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {teamLeaders.receiving && (
+                        <div className="flex items-center gap-2 text-xs bg-muted/30 p-2 rounded">
+                          <div className="flex items-center gap-2 flex-1">
+                            {teamLeaders.receiving.headshot && (
+                              <img 
+                                src={teamLeaders.receiving.headshot} 
+                                alt={teamLeaders.receiving.name}
+                                className="w-8 h-8 rounded-full object-cover bg-muted"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            )}
+                            <div>
+                              <div className="font-medium">{teamLeaders.receiving.name}</div>
+                              <div className="text-muted-foreground text-xs">{teamLeaders.receiving.position}</div>
+                            </div>
+                          </div>
+                          <div className="text-right text-xs font-medium">
+                            {teamLeaders.receiving.stats}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Venue */}
               {venue && (
