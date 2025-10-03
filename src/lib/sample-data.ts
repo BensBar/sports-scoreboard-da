@@ -66,6 +66,32 @@ export const sampleNFLGames: Game[] = [
       broadcasts: [{
         names: ['CBS'],
         market: 'national'
+      }],
+      odds: [{
+        provider: {
+          id: 'draftkings',
+          name: 'DraftKings'
+        },
+        details: 'KC -2.5',
+        overUnder: 47.5,
+        spread: -2.5,
+        awayTeamOdds: {
+          favorite: true,
+          underdog: false,
+          moneyLine: -145,
+          spreadOdds: -110
+        },
+        homeTeamOdds: {
+          favorite: false,
+          underdog: true,
+          moneyLine: +125,
+          spreadOdds: -110
+        }
+      }],
+      notes: [{
+        headline: 'Josh Allen leads the NFL with 32 passing touchdowns this season'
+      }, {
+        headline: 'Chiefs defense ranks 3rd in the league, allowing just 18.2 PPG'
       }]
     }]
   },
@@ -123,6 +149,32 @@ export const sampleNFLGames: Game[] = [
       broadcasts: [{
         names: ['FOX'],
         market: 'national'
+      }],
+      odds: [{
+        provider: {
+          id: 'fanduel',
+          name: 'FanDuel'
+        },
+        details: 'SF -6.5',
+        overUnder: 44.5,
+        spread: -6.5,
+        awayTeamOdds: {
+          favorite: true,
+          underdog: false,
+          moneyLine: -280,
+          spreadOdds: -110
+        },
+        homeTeamOdds: {
+          favorite: false,
+          underdog: true,
+          moneyLine: +230,
+          spreadOdds: -110
+        }
+      }],
+      notes: [{
+        headline: 'Christian McCaffrey questionable with knee injury'
+      }, {
+        headline: 'Seahawks have won 3 straight games at home'
       }]
     }]
   },
@@ -176,7 +228,37 @@ export const sampleNFLGames: Game[] = [
           city: 'Philadelphia',
           state: 'PA'
         }
-      }
+      },
+      broadcasts: [{
+        names: ['NBC', 'Peacock'],
+        market: 'national'
+      }],
+      odds: [{
+        provider: {
+          id: 'draftkings',
+          name: 'DraftKings'
+        },
+        details: 'PHI -3',
+        overUnder: 49.5,
+        spread: -3,
+        awayTeamOdds: {
+          favorite: false,
+          underdog: true,
+          moneyLine: +135,
+          spreadOdds: -110
+        },
+        homeTeamOdds: {
+          favorite: true,
+          underdog: false,
+          moneyLine: -155,
+          spreadOdds: -110
+        }
+      }],
+      notes: [{
+        headline: 'Dak Prescott threw for 325 yards and 2 TDs in thriller'
+      }, {
+        headline: 'Eagles defense had 4 sacks but couldn\'t stop late Dallas drive'
+      }]
     }]
   }
 ];
@@ -247,6 +329,32 @@ export const sampleNCAAFGames: Game[] = [
       broadcasts: [{
         names: ['ESPN'],
         market: 'national'
+      }],
+      odds: [{
+        provider: {
+          id: 'caesars',
+          name: 'Caesars Sportsbook'
+        },
+        details: 'UGA -7',
+        overUnder: 52.5,
+        spread: -7,
+        awayTeamOdds: {
+          favorite: true,
+          underdog: false,
+          moneyLine: -320,
+          spreadOdds: -110
+        },
+        homeTeamOdds: {
+          favorite: false,
+          underdog: true,
+          moneyLine: +260,
+          spreadOdds: -110
+        }
+      }],
+      notes: [{
+        headline: 'SEC Championship Game: Winner advances to College Football Playoff'
+      }, {
+        headline: 'Georgia looking to avenge last year\'s loss to Alabama'
       }]
     }]
   },

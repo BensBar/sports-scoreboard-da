@@ -64,12 +64,44 @@ export interface Broadcast {
   market?: string;
 }
 
+export interface Odds {
+  provider?: {
+    id: string;
+    name: string;
+  };
+  details?: string;
+  overUnder?: number;
+  spread?: number;
+  homeTeamOdds?: {
+    favorite?: boolean;
+    underdog?: boolean;
+    moneyLine?: number;
+    spreadOdds?: number;
+  };
+  awayTeamOdds?: {
+    favorite?: boolean;
+    underdog?: boolean;
+    moneyLine?: number;
+    spreadOdds?: number;
+  };
+}
+
+export interface Headline {
+  description: string;
+  shortLinkText?: string;
+  type?: string;
+}
+
 export interface Competition {
   id: string;
   competitors: ESPNTeam[];
   situation?: Situation;
   venue?: Venue;
   broadcasts?: Broadcast[];
+  odds?: Odds[];
+  notes?: Array<{
+    headline: string;
+  }>;
 }
 
 export interface Game {
@@ -78,6 +110,12 @@ export interface Game {
   status: GameStatus;
   competitions: Competition[];
   league: 'nfl' | 'college-football';
+  name?: string;
+  shortName?: string;
+  links?: Array<{
+    href: string;
+    text: string;
+  }>;
 }
 
 export interface ESPNResponse {
