@@ -18,7 +18,11 @@ export function useSportsData(league: League) {
       // If no stored sample data, use the imported sample data
       if (!fallbackData) {
         fallbackData = league === 'nfl' ? sampleNFLGames : sampleNCAAFGames;
-        await window.spark.kv.set(fallbackKey, fallbackData);
+        try {
+          await window.spark.kv.set(fallbackKey, fallbackData);
+        } catch (storageErr) {
+          console.warn('Failed to store sample data:', storageErr);
+        }
       }
       
       if (fallbackData) {
@@ -48,10 +52,23 @@ export function useSportsData(league: League) {
       const data: ESPNResponse = await response.json();
       
       const processedGames: Game[] = data.events.map(event => ({
-        ...event,
+        id: event.id,
+        date: event.date,
+        status: {
+          type: {
+            id: event.status.type.id,
+            name: event.status.type.name,
+            state: event.status.type.state,
+            completed: event.status.type.completed,
+            detail: event.status.type.detail,
+            shortDetail: event.status.type.shortDetail
+          },
+          displayClock: event.status.displayClock,
+          period: event.status.period
+        },
         league,
         competitions: event.competitions.map(comp => ({
-          ...comp,
+          id: comp.id,
           competitors: comp.competitors.map(competitor => ({
             id: competitor.id,
             team: {
@@ -64,19 +81,45 @@ export function useSportsData(league: League) {
             },
             score: competitor.score || '0',
             timeouts: competitor.timeouts || 0,
-            records: competitor.records || []
+            records: (competitor.records || []).map(record => ({
+              summary: record.summary,
+              type: record.type
+            }))
           })),
-          venue: comp.venue || undefined,
-          broadcasts: comp.broadcasts || []
+          situation: comp.situation ? {
+            lastPlay: comp.situation.lastPlay ? {
+              text: comp.situation.lastPlay.text
+            } : undefined,
+            down: comp.situation.down,
+            distance: comp.situation.distance,
+            yardLine: comp.situation.yardLine,
+            possession: comp.situation.possession
+          } : undefined,
+          venue: comp.venue ? {
+            id: comp.venue.id,
+            fullName: comp.venue.fullName,
+            address: comp.venue.address ? {
+              city: comp.venue.address.city,
+              state: comp.venue.address.state
+            } : undefined
+          } : undefined,
+          broadcasts: (comp.broadcasts || []).map(broadcast => ({
+            names: broadcast.names || [],
+            market: broadcast.market
+          }))
         }))
       }));
       
       setGames(processedGames);
       setLastUpdated(new Date());
       
-      // Store successful data as backup
-      const storageKey = league === 'nfl' ? 'last-nfl-games' : 'last-ncaaf-games';
-      await window.spark.kv.set(storageKey, processedGames);
+      // Store successful data as backup (clean JSON-serializable data)
+      try {
+        const storageKey = league === 'nfl' ? 'last-nfl-games' : 'last-ncaaf-games';
+        await window.spark.kv.set(storageKey, processedGames);
+      } catch (storageErr) {
+        console.warn('Failed to store games data:', storageErr);
+      }
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch games');
@@ -90,26 +133,32 @@ export function useSportsData(league: League) {
   }, [league, loadFallbackData]);
 
   useEffect(() => {
-    // Try to fetch real data first, fall back to sample data if it fails
+    // Initial data load
     fetchGames();
     
     // Set up auto-refresh for live games
     const interval = setInterval(() => {
       const hasLiveGames = games.some(game => 
-        game.status.type.state === 'in'
+        game.status && game.status.type && game.status.type.state === 'in'
       );
       
       if (hasLiveGames || games.length === 0) {
         fetchGames();
       }
-    }, 15000); // Refresh every 15 seconds
+    }, 30000); // Refresh every 30 seconds to be more reasonable
     
     return () => clearInterval(interval);
-  }, [fetchGames, games]);
+  }, [fetchGames]);
 
-  const liveGames = games.filter(game => game.status.type.state === 'in');
-  const upcomingGames = games.filter(game => game.status.type.state === 'pre');
-  const completedGames = games.filter(game => game.status.type.state === 'post');
+  const liveGames = games.filter(game => 
+    game.status && game.status.type && game.status.type.state === 'in'
+  );
+  const upcomingGames = games.filter(game => 
+    game.status && game.status.type && game.status.type.state === 'pre'
+  );
+  const completedGames = games.filter(game => 
+    game.status && game.status.type && game.status.type.state === 'post'
+  );
 
   return {
     games,

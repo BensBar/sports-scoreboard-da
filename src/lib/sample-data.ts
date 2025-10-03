@@ -71,7 +71,7 @@ export const sampleNFLGames: Game[] = [
   },
   {
     id: 'nfl-2',
-    date: new Date(Date.now() + 3600000).toISOString(), // 1 hour from now
+    date: new Date(Date.now() + 3 * 3600000).toISOString(), // 3 hours from now
     league: 'nfl',
     status: {
       type: {
@@ -303,6 +303,63 @@ export const sampleNCAAFGames: Game[] = [
       },
       broadcasts: [{
         names: ['ABC'],
+        market: 'national'
+      }]
+    }]
+  },
+  {
+    id: 'nfl-4',
+    date: new Date(Date.now() + 24 * 3600000).toISOString(), // Tomorrow
+    league: 'nfl',
+    status: {
+      type: {
+        id: '1',
+        name: 'STATUS_SCHEDULED',
+        state: 'pre',
+        completed: false,
+        detail: 'Tomorrow 1:00 PM',
+        shortDetail: '1:00 PM'
+      }
+    },
+    competitions: [{
+      id: 'comp-4',
+      competitors: [{
+        id: 'team-7',
+        team: {
+          id: 'gb',
+          name: 'Packers',
+          abbreviation: 'GB',
+          displayName: 'Green Bay Packers',
+          color: '#203731',
+          logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/gb.png'
+        },
+        score: '0',
+        timeouts: 3,
+        records: [{ summary: '8-4', type: 'total' }]
+      }, {
+        id: 'team-8',
+        team: {
+          id: 'det',
+          name: 'Lions',
+          abbreviation: 'DET',
+          displayName: 'Detroit Lions',
+          color: '#0076B6',
+          logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/det.png'
+        },
+        score: '0',
+        timeouts: 3,
+        records: [{ summary: '10-2', type: 'total' }]
+      }],
+      venue: {
+        id: 'venue-4',
+        fullName: 'Ford Field',
+        address: {
+          city: 'Detroit',
+          state: 'MI'
+        }
+      },
+      broadcasts: [{
+        names: ['FOX'],
         market: 'national'
       }]
     }]

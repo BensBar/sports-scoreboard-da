@@ -101,8 +101,11 @@ export function SportsDashboard() {
         {/* Error State */}
         {error && (
           <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-6">
-            <div className="text-destructive text-sm font-medium">
+            <div className="text-destructive text-sm font-medium mb-2">
               Error loading games: {error}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Showing sample data instead. Real data will be available when the API is accessible.
             </div>
           </div>
         )}

@@ -43,6 +43,8 @@ export function getGameStatusText(status: any): string {
 
 export function formatGameDate(dateString: string): string {
   try {
+    if (!dateString) return 'TBD';
+    
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
       return 'TBD';
@@ -51,33 +53,57 @@ export function formatGameDate(dateString: string): string {
     const now = new Date();
     const isToday = date.toDateString() === now.toDateString();
     const isTomorrow = date.toDateString() === new Date(now.getTime() + 24 * 60 * 60 * 1000).toDateString();
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const isYesterday = date.toDateString() === yesterday.toDateString();
     
     if (isToday) {
-      return date.toLocaleTimeString([], { 
+      return `Today ${date.toLocaleTimeString([], { 
         hour: 'numeric', 
-        minute: '2-digit' 
-      });
+        minute: '2-digit',
+        timeZoneName: 'short'
+      })}`;
     } else if (isTomorrow) {
       return `Tomorrow ${date.toLocaleTimeString([], { 
         hour: 'numeric', 
-        minute: '2-digit' 
+        minute: '2-digit',
+        timeZoneName: 'short'
+      })}`;
+    } else if (isYesterday) {
+      return `Yesterday ${date.toLocaleTimeString([], { 
+        hour: 'numeric', 
+        minute: '2-digit'
       })}`;
     } else {
-      return date.toLocaleDateString([], {
-        weekday: 'short',
-        month: 'short', 
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit'
-      });
+      const diffDays = Math.abs(Math.floor((date.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)));
+      
+      if (diffDays <= 7) {
+        return date.toLocaleDateString([], {
+          weekday: 'long',
+          hour: 'numeric',
+          minute: '2-digit',
+          timeZoneName: 'short'
+        });
+      } else {
+        return date.toLocaleDateString([], {
+          weekday: 'short',
+          month: 'short', 
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          timeZoneName: 'short'
+        });
+      }
     }
   } catch (error) {
+    console.error('Date formatting error:', error, 'for date:', dateString);
     return 'TBD';
   }
 }
 
 export function formatGameDateShort(dateString: string): string {
   try {
+    if (!dateString) return 'TBD';
+    
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
       return 'TBD';
@@ -85,12 +111,19 @@ export function formatGameDateShort(dateString: string): string {
     
     const now = new Date();
     const isToday = date.toDateString() === now.toDateString();
+    const isTomorrow = date.toDateString() === new Date(now.getTime() + 24 * 60 * 60 * 1000).toDateString();
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const isYesterday = date.toDateString() === yesterday.toDateString();
     
     if (isToday) {
-      return date.toLocaleTimeString([], { 
+      return `Today ${date.toLocaleTimeString([], { 
         hour: 'numeric', 
-        minute: '2-digit' 
-      });
+        minute: '2-digit'
+      })}`;
+    } else if (isTomorrow) {
+      return `Tomorrow`;
+    } else if (isYesterday) {
+      return `Yesterday`;
     } else {
       return date.toLocaleDateString([], {
         weekday: 'short',
@@ -99,6 +132,7 @@ export function formatGameDateShort(dateString: string): string {
       });
     }
   } catch (error) {
+    console.error('Date formatting error:', error, 'for date:', dateString);
     return 'TBD';
   }
 }
