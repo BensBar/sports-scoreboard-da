@@ -24,7 +24,7 @@ export function formatDownAndDistance(down?: number, distance?: number): string 
 
 export function getGameStatusText(status: any): string {
   if (status.type.state === 'pre') {
-    return status.type.shortDetail || status.type.detail || 'Upcoming';
+    return 'Upcoming';
   }
   
   if (status.type.state === 'in') {
