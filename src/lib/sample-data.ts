@@ -308,9 +308,9 @@ export const sampleNCAAFGames: Game[] = [
     }]
   },
   {
-    id: 'nfl-4',
+    id: 'ncaaf-3',
     date: new Date(Date.now() + 24 * 3600000).toISOString(), // Tomorrow
-    league: 'nfl',
+    league: 'college-football',
     status: {
       type: {
         id: '1',
@@ -326,12 +326,12 @@ export const sampleNCAAFGames: Game[] = [
       competitors: [{
         id: 'team-7',
         team: {
-          id: 'gb',
-          name: 'Packers',
-          abbreviation: 'GB',
-          displayName: 'Green Bay Packers',
-          color: '#203731',
-          logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/gb.png'
+          id: 'texas',
+          name: 'Longhorns',
+          abbreviation: 'TEX',
+          displayName: 'Texas Longhorns',
+          color: '#BF5700',
+          logo: 'https://a.espncdn.com/i/teamlogos/ncaa/500/251.png'
         },
         score: '0',
         timeouts: 3,
@@ -339,23 +339,23 @@ export const sampleNCAAFGames: Game[] = [
       }, {
         id: 'team-8',
         team: {
-          id: 'det',
-          name: 'Lions',
-          abbreviation: 'DET',
-          displayName: 'Detroit Lions',
-          color: '#0076B6',
-          logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/det.png'
+          id: 'oklahoma',
+          name: 'Sooners',
+          abbreviation: 'OU',
+          displayName: 'Oklahoma Sooners',
+          color: '#841617',
+          logo: 'https://a.espncdn.com/i/teamlogos/ncaa/500/201.png'
         },
         score: '0',
         timeouts: 3,
         records: [{ summary: '10-2', type: 'total' }]
       }],
       venue: {
-        id: 'venue-4',
-        fullName: 'Ford Field',
+        id: 'venue-5',
+        fullName: 'Darrell K Royal Stadium',
         address: {
-          city: 'Detroit',
-          state: 'MI'
+          city: 'Austin',
+          state: 'TX'
         }
       },
       broadcasts: [{
