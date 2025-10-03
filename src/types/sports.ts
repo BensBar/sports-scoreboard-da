@@ -21,6 +21,10 @@ export interface ESPNTeam {
   };
   score: string;
   timeouts?: number;
+  records?: Array<{
+    summary: string;
+    type: string;
+  }>;
 }
 
 export interface GameStatus {
@@ -29,6 +33,8 @@ export interface GameStatus {
     name: string;
     state: 'pre' | 'in' | 'post';
     completed: boolean;
+    detail?: string;
+    shortDetail?: string;
   };
   displayClock?: string;
   period?: number;
@@ -44,10 +50,26 @@ export interface Situation {
   possession?: string;
 }
 
+export interface Venue {
+  id: string;
+  fullName: string;
+  address?: {
+    city: string;
+    state: string;
+  };
+}
+
+export interface Broadcast {
+  names?: string[];
+  market?: string;
+}
+
 export interface Competition {
   id: string;
   competitors: ESPNTeam[];
   situation?: Situation;
+  venue?: Venue;
+  broadcasts?: Broadcast[];
 }
 
 export interface Game {

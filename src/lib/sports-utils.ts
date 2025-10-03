@@ -22,10 +22,7 @@ export function formatDownAndDistance(down?: number, distance?: number): string 
 
 export function getGameStatusText(status: any): string {
   if (status.type.state === 'pre') {
-    return new Date(status.type.detail).toLocaleTimeString([], { 
-      hour: 'numeric', 
-      minute: '2-digit' 
-    });
+    return status.type.shortDetail || status.type.detail || 'Upcoming';
   }
   
   if (status.type.state === 'in') {
@@ -42,6 +39,68 @@ export function getGameStatusText(status: any): string {
   }
   
   return status.type.name || '';
+}
+
+export function formatGameDate(dateString: string): string {
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return 'TBD';
+    }
+    
+    const now = new Date();
+    const isToday = date.toDateString() === now.toDateString();
+    const isTomorrow = date.toDateString() === new Date(now.getTime() + 24 * 60 * 60 * 1000).toDateString();
+    
+    if (isToday) {
+      return date.toLocaleTimeString([], { 
+        hour: 'numeric', 
+        minute: '2-digit' 
+      });
+    } else if (isTomorrow) {
+      return `Tomorrow ${date.toLocaleTimeString([], { 
+        hour: 'numeric', 
+        minute: '2-digit' 
+      })}`;
+    } else {
+      return date.toLocaleDateString([], {
+        weekday: 'short',
+        month: 'short', 
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      });
+    }
+  } catch (error) {
+    return 'TBD';
+  }
+}
+
+export function formatGameDateShort(dateString: string): string {
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return 'TBD';
+    }
+    
+    const now = new Date();
+    const isToday = date.toDateString() === now.toDateString();
+    
+    if (isToday) {
+      return date.toLocaleTimeString([], { 
+        hour: 'numeric', 
+        minute: '2-digit' 
+      });
+    } else {
+      return date.toLocaleDateString([], {
+        weekday: 'short',
+        month: 'short', 
+        day: 'numeric'
+      });
+    }
+  } catch (error) {
+    return 'TBD';
+  }
 }
 
 export function getGameStatusColor(status: any): string {

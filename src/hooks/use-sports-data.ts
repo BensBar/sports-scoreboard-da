@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Game, League, ESPNResponse } from '@/types/sports';
+import { sampleNFLGames, sampleNCAAFGames } from '@/lib/sample-data';
 
 const ESPN_API_BASE = 'https://site.api.espn.com/apis/site/v2/sports/football';
 
@@ -12,13 +13,23 @@ export function useSportsData(league: League) {
   const loadFallbackData = useCallback(async () => {
     try {
       const fallbackKey = league === 'nfl' ? 'sample-nfl-games' : 'sample-ncaaf-games';
-      const fallbackData = await window.spark.kv.get<Game[]>(fallbackKey);
+      let fallbackData = await window.spark.kv.get<Game[]>(fallbackKey);
+      
+      // If no stored sample data, use the imported sample data
+      if (!fallbackData) {
+        fallbackData = league === 'nfl' ? sampleNFLGames : sampleNCAAFGames;
+        await window.spark.kv.set(fallbackKey, fallbackData);
+      }
+      
       if (fallbackData) {
         setGames(fallbackData);
         setLastUpdated(new Date());
       }
     } catch (err) {
       console.error('Failed to load fallback data:', err);
+      // Use imported sample data as last resort
+      setGames(league === 'nfl' ? sampleNFLGames : sampleNCAAFGames);
+      setLastUpdated(new Date());
     }
   }, [league]);
 
@@ -52,13 +63,21 @@ export function useSportsData(league: League) {
               logo: competitor.team.logo || ''
             },
             score: competitor.score || '0',
-            timeouts: competitor.timeouts || 0
-          }))
+            timeouts: competitor.timeouts || 0,
+            records: competitor.records || []
+          })),
+          venue: comp.venue || undefined,
+          broadcasts: comp.broadcasts || []
         }))
       }));
       
       setGames(processedGames);
       setLastUpdated(new Date());
+      
+      // Store successful data as backup
+      const storageKey = league === 'nfl' ? 'last-nfl-games' : 'last-ncaaf-games';
+      await window.spark.kv.set(storageKey, processedGames);
+      
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch games');
       console.error('Sports API Error:', err);
@@ -71,6 +90,7 @@ export function useSportsData(league: League) {
   }, [league, loadFallbackData]);
 
   useEffect(() => {
+    // Try to fetch real data first, fall back to sample data if it fails
     fetchGames();
     
     // Set up auto-refresh for live games
