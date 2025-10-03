@@ -1,5 +1,12 @@
-.theme {
-  --accent-color: crimson;
-  --secondary-color: red;
-  /* Other theme styles here */
+/* Other existing styles */
+
+:root {
+    --primary-color: #000;
+    --secondary-color: #fff;
+    --accent-color: var(--red);
+    --accent-color-light: var(--crimson);
+    --accent-color-dark: var(--dark-red);
+    /* Other existing variables */
 }
+
+/* Other existing styles continue */
