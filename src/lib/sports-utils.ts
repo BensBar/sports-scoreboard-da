@@ -142,5 +142,6 @@ export function formatGameDateShort(dateString: string): string {
 export function getGameStatusColor(status: any): string {
   if (status.type.state === 'in') return 'bg-primary';
   if (status.type.state === 'pre') return 'bg-accent';
+  if (status.type.state === 'post') return 'bg-green-600';
   return 'bg-muted';
 }
