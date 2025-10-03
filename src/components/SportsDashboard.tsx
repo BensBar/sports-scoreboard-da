@@ -1,0 +1,185 @@
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ArrowClockwise, Football, Broadcast } from '@phosphor-icons/react';
+import { GameCard } from '@/components/GameCard';
+import { useSportsData } from '@/hooks/use-sports-data';
+import { useKV } from '@github/spark/hooks';
+import { League } from '@/types/sports';
+import { toast } from 'sonner';
+
+export function SportsDashboard() {
+  const [selectedLeague, setSelectedLeague] = useKV<League>('selected-league', 'nfl');
+  const currentLeague = selectedLeague || 'nfl';
+  
+  const { 
+    liveGames, 
+    upcomingGames, 
+    completedGames, 
+    loading, 
+    error, 
+    lastUpdated, 
+    refresh 
+  } = useSportsData(currentLeague);
+
+  const handleLeagueChange = (league: League) => {
+    setSelectedLeague(league);
+    toast.success(`Switched to ${league.toUpperCase()}`);
+  };
+
+  const handleRefresh = () => {
+    refresh();
+    toast.success('Refreshing games...');
+  };
+
+  const formatLastUpdated = (date: Date | null) => {
+    if (!date) return '';
+    return date.toLocaleTimeString([], { 
+      hour: 'numeric', 
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
+          <div className="flex items-center space-x-3 mb-4 sm:mb-0">
+            <Broadcast className="w-8 h-8 text-primary" />
+            <h1 className="text-3xl font-bold">Sports Dashboard</h1>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            {/* League Toggle */}
+            <div className="flex bg-muted rounded-lg p-1">
+              <Button
+                variant={currentLeague === 'nfl' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => handleLeagueChange('nfl')}
+                className="text-sm font-medium"
+              >
+                <Football className="w-4 h-4 mr-1" />
+                NFL
+              </Button>
+              <Button
+                variant={currentLeague === 'college-football' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => handleLeagueChange('college-football')}
+                className="text-sm font-medium"
+              >
+                <Football className="w-4 h-4 mr-1" />
+                NCAAF
+              </Button>
+            </div>
+
+            {/* Refresh Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={loading}
+              className="flex items-center space-x-2"
+            >
+              <ArrowClockwise 
+                className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} 
+              />
+              <span className="hidden sm:inline">Refresh</span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Last Updated */}
+        {lastUpdated && (
+          <div className="text-sm text-muted-foreground mb-6">
+            Last updated: {formatLastUpdated(lastUpdated)}
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-6">
+            <div className="text-destructive text-sm font-medium">
+              Error loading games: {error}
+            </div>
+          </div>
+        )}
+
+        {/* Live Games */}
+        {liveGames.length > 0 && (
+          <section className="mb-8">
+            <div className="flex items-center space-x-2 mb-4">
+              <h2 className="text-2xl font-semibold">Live Games</h2>
+              <Badge className="bg-primary text-primary-foreground">
+                {liveGames.length}
+              </Badge>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {liveGames.map((game) => (
+                <GameCard key={game.id} game={game} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Upcoming Games */}
+        {upcomingGames.length > 0 && (
+          <section className="mb-8">
+            <div className="flex items-center space-x-2 mb-4">
+              <h2 className="text-2xl font-semibold">Upcoming Games</h2>
+              <Badge variant="outline">
+                {upcomingGames.length}
+              </Badge>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {upcomingGames.map((game) => (
+                <GameCard key={game.id} game={game} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Completed Games */}
+        {completedGames.length > 0 && (
+          <section className="mb-8">
+            <div className="flex items-center space-x-2 mb-4">
+              <h2 className="text-2xl font-semibold">Final Scores</h2>
+              <Badge variant="secondary">
+                {completedGames.length}
+              </Badge>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {completedGames.map((game) => (
+                <GameCard key={game.id} game={game} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Loading State */}
+        {loading && liveGames.length === 0 && upcomingGames.length === 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="space-y-3">
+                <Skeleton className="h-48 w-full rounded-lg" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* No Games State */}
+        {!loading && liveGames.length === 0 && upcomingGames.length === 0 && completedGames.length === 0 && (
+          <div className="text-center py-12">
+            <Football className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">No Games Today</h3>
+            <p className="text-muted-foreground">
+              Check back later for upcoming {currentLeague.toUpperCase()} games
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
