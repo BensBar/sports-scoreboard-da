@@ -111,7 +111,7 @@ export function GameCard({ game }: GameCardProps) {
               <div className="mb-4 flex items-center justify-center text-sm bg-muted/50 p-2 rounded">
                 <Television className="w-4 h-4 mr-2 text-primary" />
                 <span className="font-medium text-primary">
-                  {broadcasts.map(b => b.names?.join(', ')).join(', ')}
+                  {broadcasts.filter(b => b.names?.length).map(b => b.names!.join(', ')).join(', ')}
                 </span>
               </div>
             )}
