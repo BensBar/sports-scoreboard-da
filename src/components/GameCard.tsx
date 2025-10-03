@@ -54,6 +54,12 @@ export function GameCard({ game }: GameCardProps) {
   const isUpcoming = status.type.state === 'pre';
   const isCompleted = status.type.state === 'post';
 
+  // Determine winner for completed games
+  const team1Score = getTeamScore(team1);
+  const team2Score = getTeamScore(team2);
+  const team1IsWinner = isCompleted && team1Score > team2Score;
+  const team2IsWinner = isCompleted && team2Score > team1Score;
+
   const handleCardClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsFlipped(!isFlipped);
@@ -101,7 +107,9 @@ export function GameCard({ game }: GameCardProps) {
             {/* Teams vs Format */}
             <div className="space-y-4 flex-1">
               {/* Team 1 */}
-              <div className="flex items-center justify-between">
+              <div className={`flex items-center justify-between p-3 rounded-lg transition-all ${
+                team1IsWinner ? 'bg-green-50 dark:bg-green-950/30 border-2 border-green-500 dark:border-green-700' : ''
+              }`}>
                 <div className="flex items-center space-x-3 flex-1">
                   {team1?.team?.logo && (
                     <img 
@@ -114,7 +122,7 @@ export function GameCard({ game }: GameCardProps) {
                     />
                   )}
                   <div className="flex-1">
-                    <div className="font-bold text-xl">
+                    <div className={`font-bold text-xl ${team1IsWinner ? 'text-green-700 dark:text-green-400' : ''}`}>
                       {team1?.team?.abbreviation || 'TBD'}
                     </div>
                     <div className="text-sm text-muted-foreground truncate">
@@ -124,7 +132,7 @@ export function GameCard({ game }: GameCardProps) {
                 </div>
                 
                 <div className="text-right ml-4">
-                  <div className="text-3xl font-bold text-primary">
+                  <div className={`text-3xl font-bold ${team1IsWinner ? 'text-green-600 dark:text-green-400' : 'text-primary'}`}>
                     {getTeamScore(team1)}
                   </div>
                 </div>
@@ -136,7 +144,9 @@ export function GameCard({ game }: GameCardProps) {
               </div>
 
               {/* Team 2 */}
-              <div className="flex items-center justify-between">
+              <div className={`flex items-center justify-between p-3 rounded-lg transition-all ${
+                team2IsWinner ? 'bg-green-50 dark:bg-green-950/30 border-2 border-green-500 dark:border-green-700' : ''
+              }`}>
                 <div className="flex items-center space-x-3 flex-1">
                   {team2?.team?.logo && (
                     <img 
@@ -149,7 +159,7 @@ export function GameCard({ game }: GameCardProps) {
                     />
                   )}
                   <div className="flex-1">
-                    <div className="font-bold text-xl">
+                    <div className={`font-bold text-xl ${team2IsWinner ? 'text-green-700 dark:text-green-400' : ''}`}>
                       {team2?.team?.abbreviation || 'TBD'}
                     </div>
                     <div className="text-sm text-muted-foreground truncate">
@@ -159,7 +169,7 @@ export function GameCard({ game }: GameCardProps) {
                 </div>
                 
                 <div className="text-right ml-4">
-                  <div className="text-3xl font-bold text-primary">
+                  <div className={`text-3xl font-bold ${team2IsWinner ? 'text-green-600 dark:text-green-400' : 'text-primary'}`}>
                     {getTeamScore(team2)}
                   </div>
                 </div>

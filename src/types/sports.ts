@@ -25,6 +25,10 @@ export interface ESPNTeam {
     summary: string;
     type: string;
   }>;
+  curatedRank?: {
+    current: number;
+  };
+  rank?: number;
 }
 
 export interface GameStatus {

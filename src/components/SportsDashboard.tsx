@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 
 export function SportsDashboard() {
   const [selectedLeague, setSelectedLeague] = useKV<League>('selected-league', 'nfl');
+  const [showTop25Only, setShowTop25Only] = useState(false);
   const currentLeague = selectedLeague || 'nfl';
   
   const { 
@@ -23,8 +24,30 @@ export function SportsDashboard() {
     refresh 
   } = useSportsData(currentLeague);
 
+  // Filter function for Top 25 teams
+  const filterTop25 = (games: typeof liveGames) => {
+    if (!showTop25Only || currentLeague !== 'college-football') {
+      return games;
+    }
+    return games.filter(game => {
+      const competition = game.competitions?.[0];
+      if (!competition) return false;
+      const competitors = competition.competitors || [];
+      // Show game if either team is ranked in Top 25
+      return competitors.some(team => 
+        (team.curatedRank?.current && team.curatedRank.current <= 25) ||
+        (team.rank && team.rank <= 25)
+      );
+    });
+  };
+
+  const filteredLiveGames = filterTop25(liveGames);
+  const filteredUpcomingGames = filterTop25(upcomingGames);
+  const filteredCompletedGames = filterTop25(completedGames);
+
   const handleLeagueChange = (league: League) => {
     setSelectedLeague(league);
+    setShowTop25Only(false); // Reset filter when changing leagues
     toast.success(`Switched to ${league.toUpperCase()}`);
   };
 
@@ -75,6 +98,21 @@ export function SportsDashboard() {
               </Button>
             </div>
 
+            {/* Top 25 Filter (only for NCAA) */}
+            {currentLeague === 'college-football' && (
+              <Button
+                variant={showTop25Only ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  setShowTop25Only(!showTop25Only);
+                  toast.success(showTop25Only ? 'Showing all games' : 'Showing Top 25 games');
+                }}
+                className="text-sm font-medium"
+              >
+                Top 25
+              </Button>
+            )}
+
             {/* Refresh Button */}
             <Button
               variant="outline"
@@ -110,34 +148,34 @@ export function SportsDashboard() {
           </div>
         )}
 
-        {/* Completed Games */}
-        {completedGames.length > 0 && (
+        {/* Live Games */}
+        {filteredLiveGames.length > 0 && (
           <section className="mb-8">
             <div className="flex items-center space-x-2 mb-4">
-              <h2 className="text-2xl font-semibold">Final Scores</h2>
-              <Badge variant="secondary">
-                {completedGames.length}
+              <h2 className="text-2xl font-semibold">Live Games</h2>
+              <Badge className="bg-primary text-primary-foreground">
+                {filteredLiveGames.length}
               </Badge>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {completedGames.map((game) => (
+              {filteredLiveGames.map((game) => (
                 <GameCard key={game.id} game={game} />
               ))}
             </div>
           </section>
         )}
 
-        {/* Live Games */}
-        {liveGames.length > 0 && (
+        {/* Completed Games */}
+        {filteredCompletedGames.length > 0 && (
           <section className="mb-8">
             <div className="flex items-center space-x-2 mb-4">
-              <h2 className="text-2xl font-semibold">Live Games</h2>
-              <Badge className="bg-primary text-primary-foreground">
-                {liveGames.length}
+              <h2 className="text-2xl font-semibold">Final Scores</h2>
+              <Badge variant="secondary">
+                {filteredCompletedGames.length}
               </Badge>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {liveGames.map((game) => (
+              {filteredCompletedGames.map((game) => (
                 <GameCard key={game.id} game={game} />
               ))}
             </div>
@@ -145,16 +183,16 @@ export function SportsDashboard() {
         )}
 
         {/* Upcoming Games */}
-        {upcomingGames.length > 0 && (
+        {filteredUpcomingGames.length > 0 && (
           <section className="mb-8">
             <div className="flex items-center space-x-2 mb-4">
               <h2 className="text-2xl font-semibold">Upcoming Games</h2>
               <Badge variant="outline">
-                {upcomingGames.length}
+                {filteredUpcomingGames.length}
               </Badge>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {upcomingGames.map((game) => (
+              {filteredUpcomingGames.map((game) => (
                 <GameCard key={game.id} game={game} />
               ))}
             </div>
@@ -173,12 +211,17 @@ export function SportsDashboard() {
         )}
 
         {/* No Games State */}
-        {!loading && liveGames.length === 0 && upcomingGames.length === 0 && completedGames.length === 0 && (
+        {!loading && filteredLiveGames.length === 0 && filteredUpcomingGames.length === 0 && filteredCompletedGames.length === 0 && (
           <div className="text-center py-12">
             <Football className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No Games Today</h3>
+            <h3 className="text-xl font-semibold mb-2">
+              {showTop25Only ? 'No Top 25 Games' : 'No Games Today'}
+            </h3>
             <p className="text-muted-foreground">
-              Check back later for upcoming {currentLeague.toUpperCase()} games
+              {showTop25Only 
+                ? 'No Top 25 ranked teams are playing right now'
+                : `Check back later for upcoming ${currentLeague.toUpperCase()} games`
+              }
             </p>
           </div>
         )}

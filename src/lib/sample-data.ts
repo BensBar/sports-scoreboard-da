@@ -294,7 +294,10 @@ export const sampleNCAAFGames: Game[] = [
         },
         score: '28',
         timeouts: 1,
-        records: [{ summary: '11-1', type: 'total' }]
+        records: [{ summary: '11-1', type: 'total' }],
+        curatedRank: {
+          current: 1
+        }
       }, {
         id: 'team-8',
         team: {
@@ -307,7 +310,10 @@ export const sampleNCAAFGames: Game[] = [
         },
         score: '21',
         timeouts: 2,
-        records: [{ summary: '10-2', type: 'total' }]
+        records: [{ summary: '10-2', type: 'total' }],
+        curatedRank: {
+          current: 5
+        }
       }],
       situation: {
         lastPlay: {
@@ -386,7 +392,10 @@ export const sampleNCAAFGames: Game[] = [
         },
         score: '0',
         timeouts: 3,
-        records: [{ summary: '12-0', type: 'total' }]
+        records: [{ summary: '12-0', type: 'total' }],
+        curatedRank: {
+          current: 2
+        }
       }, {
         id: 'team-10',
         team: {
@@ -399,7 +408,10 @@ export const sampleNCAAFGames: Game[] = [
         },
         score: '0',
         timeouts: 3,
-        records: [{ summary: '11-1', type: 'total' }]
+        records: [{ summary: '11-1', type: 'total' }],
+        curatedRank: {
+          current: 3
+        }
       }],
       venue: {
         id: 'venue-5',
@@ -412,6 +424,32 @@ export const sampleNCAAFGames: Game[] = [
       broadcasts: [{
         names: ['ABC'],
         market: 'national'
+      }],
+      odds: [{
+        provider: {
+          id: 'draftkings',
+          name: 'DraftKings'
+        },
+        details: 'MICH -3.5',
+        overUnder: 48.5,
+        spread: -3.5,
+        awayTeamOdds: {
+          favorite: true,
+          underdog: false,
+          moneyLine: -165,
+          spreadOdds: -110
+        },
+        homeTeamOdds: {
+          favorite: false,
+          underdog: true,
+          moneyLine: +145,
+          spreadOdds: -110
+        }
+      }],
+      notes: [{
+        headline: 'The Game: Rivalry matchup will determine Big Ten East champion'
+      }, {
+        headline: 'Michigan undefeated and looking for playoff berth'
       }]
     }]
   },
@@ -456,7 +494,10 @@ export const sampleNCAAFGames: Game[] = [
         },
         score: '0',
         timeouts: 3,
-        records: [{ summary: '10-2', type: 'total' }]
+        records: [{ summary: '10-2', type: 'total' }],
+        curatedRank: {
+          current: 12
+        }
       }],
       venue: {
         id: 'venue-5',
@@ -469,6 +510,30 @@ export const sampleNCAAFGames: Game[] = [
       broadcasts: [{
         names: ['FOX'],
         market: 'national'
+      }],
+      odds: [{
+        provider: {
+          id: 'fanduel',
+          name: 'FanDuel'
+        },
+        details: 'OU -4',
+        overUnder: 55.5,
+        spread: -4,
+        awayTeamOdds: {
+          favorite: false,
+          underdog: true,
+          moneyLine: +155,
+          spreadOdds: -110
+        },
+        homeTeamOdds: {
+          favorite: true,
+          underdog: false,
+          moneyLine: -180,
+          spreadOdds: -110
+        }
+      }],
+      notes: [{
+        headline: 'Red River Rivalry: High-scoring affair expected'
       }]
     }]
   }
