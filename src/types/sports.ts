@@ -96,6 +96,77 @@ export interface Headline {
   type?: string;
 }
 
+// New interfaces for enhanced features
+export interface PlayerLeader {
+  playerId: string;
+  name: string;
+  headshot?: string;
+  stats: string;
+  position?: string;
+}
+
+export interface GameLeaders {
+  passing?: PlayerLeader;
+  rushing?: PlayerLeader;
+  receiving?: PlayerLeader;
+}
+
+export interface TeamStatistic {
+  name: string;
+  displayValue: string;
+}
+
+export interface GameStatistics {
+  [teamId: string]: TeamStatistic[];
+}
+
+export interface Play {
+  id: string;
+  type: {
+    text: string;
+  };
+  text: string;
+  homeScore: number;
+  awayScore: number;
+  period: {
+    number: number;
+  };
+  clock: {
+    displayValue: string;
+  };
+  scoringPlay?: boolean;
+  team?: {
+    id: string;
+  };
+}
+
+export interface Drive {
+  id: string;
+  description: string;
+  team: {
+    name: string;
+    abbreviation: string;
+  };
+  start: {
+    period: {
+      number: number;
+    };
+    clock: {
+      displayValue: string;
+    };
+  };
+  end?: {
+    period: {
+      number: number;
+    };
+    clock: {
+      displayValue: string;
+    };
+  };
+  plays: Play[];
+  result?: string;
+}
+
 export interface Competition {
   id: string;
   competitors: ESPNTeam[];
@@ -106,6 +177,9 @@ export interface Competition {
   notes?: Array<{
     headline: string;
   }>;
+  leaders?: GameLeaders[];
+  statistics?: GameStatistics;
+  drives?: Drive[];
 }
 
 export interface Game {
