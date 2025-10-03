@@ -504,7 +504,7 @@ export function GameCard({ game }: GameCardProps) {
                                       </div>
                                       {play.scoringPlay && (
                                         <div className="mt-1 text-[10px] font-semibold text-green-600 dark:text-green-400">
-                                          Score: {team1?.team?.id === play.team?.id ? play.awayScore : play.homeScore} - {team2?.team?.id === play.team?.id ? play.awayScore : play.homeScore}
+                                          Score: {play.awayScore} - {play.homeScore}
                                         </div>
                                       )}
                                     </div>
