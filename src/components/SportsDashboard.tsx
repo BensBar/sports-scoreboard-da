@@ -110,6 +110,23 @@ export function SportsDashboard() {
           </div>
         )}
 
+        {/* Completed Games */}
+        {completedGames.length > 0 && (
+          <section className="mb-8">
+            <div className="flex items-center space-x-2 mb-4">
+              <h2 className="text-2xl font-semibold">Final Scores</h2>
+              <Badge variant="secondary">
+                {completedGames.length}
+              </Badge>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {completedGames.map((game) => (
+                <GameCard key={game.id} game={game} />
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Live Games */}
         {liveGames.length > 0 && (
           <section className="mb-8">
@@ -138,23 +155,6 @@ export function SportsDashboard() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {upcomingGames.map((game) => (
-                <GameCard key={game.id} game={game} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Completed Games */}
-        {completedGames.length > 0 && (
-          <section className="mb-8">
-            <div className="flex items-center space-x-2 mb-4">
-              <h2 className="text-2xl font-semibold">Final Scores</h2>
-              <Badge variant="secondary">
-                {completedGames.length}
-              </Badge>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {completedGames.map((game) => (
                 <GameCard key={game.id} game={game} />
               ))}
             </div>
