@@ -87,7 +87,9 @@ export function GameCard({ game }: GameCardProps) {
             {/* Status Header */}
             <div className="flex items-center justify-between mb-6">
               <Badge 
-                className={`${getGameStatusColor(status)} text-white font-medium`}
+                className={`${getGameStatusColor(status)} text-white font-medium ${
+                  isCompleted ? 'text-lg px-4 py-2 uppercase tracking-wide font-bold' : ''
+                }`}
               >
                 {isLive && <Timer className="w-3 h-3 mr-1" />}
                 {isUpcoming && <Clock className="w-3 h-3 mr-1" />}
@@ -103,6 +105,16 @@ export function GameCard({ game }: GameCardProps) {
                 <FlipHorizontal className="w-4 h-4 text-muted-foreground" />
               </div>
             </div>
+
+            {/* Broadcast Info for Upcoming Games */}
+            {isUpcoming && broadcasts && broadcasts.length > 0 && (
+              <div className="mb-4 flex items-center justify-center text-sm bg-muted/50 p-2 rounded">
+                <Television className="w-4 h-4 mr-2 text-primary" />
+                <span className="font-medium text-primary">
+                  {broadcasts.map(b => b.names?.join(', ')).join(', ')}
+                </span>
+              </div>
+            )}
 
             {/* Teams vs Format */}
             <div className="space-y-4 flex-1">
@@ -128,6 +140,11 @@ export function GameCard({ game }: GameCardProps) {
                     <div className="text-sm text-muted-foreground truncate">
                       {team1?.team?.displayName || 'Team Name TBD'}
                     </div>
+                    {team1?.records?.[0]?.summary && (
+                      <div className="text-xs text-muted-foreground mt-0.5">
+                        {team1.records[0].summary}
+                      </div>
+                    )}
                   </div>
                 </div>
                 
@@ -165,6 +182,11 @@ export function GameCard({ game }: GameCardProps) {
                     <div className="text-sm text-muted-foreground truncate">
                       {team2?.team?.displayName || 'Team Name TBD'}
                     </div>
+                    {team2?.records?.[0]?.summary && (
+                      <div className="text-xs text-muted-foreground mt-0.5">
+                        {team2.records[0].summary}
+                      </div>
+                    )}
                   </div>
                 </div>
                 
