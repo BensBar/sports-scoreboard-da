@@ -87,10 +87,13 @@ export function GameCard({ game }: GameCardProps) {
             {/* Status Header */}
             <div className="flex items-center justify-between mb-6">
               <Badge 
-                className={`${getGameStatusColor(status)} text-white font-medium`}
+                className={`${getGameStatusColor(status)} text-white font-medium ${
+                  isCompleted ? 'text-base px-3 py-1.5' : ''
+                }`}
               >
                 {isLive && <Timer className="w-3 h-3 mr-1" />}
                 {isUpcoming && <Clock className="w-3 h-3 mr-1" />}
+                {isCompleted && <span className="mr-1">🏁</span>}
                 {getGameStatusText(status)}
               </Badge>
               
@@ -108,7 +111,7 @@ export function GameCard({ game }: GameCardProps) {
             <div className="space-y-4 flex-1">
               {/* Team 1 */}
               <div className={`flex items-center justify-between p-3 rounded-lg transition-all ${
-                team1IsWinner ? 'bg-green-50 dark:bg-green-950/30 border-2 border-green-500 dark:border-green-700' : ''
+                team1IsWinner ? 'bg-green-50 dark:bg-green-950/30 border-2 border-green-500 dark:border-green-700 shadow-md' : ''
               }`}>
                 <div className="flex items-center space-x-3 flex-1">
                   {team1?.team?.logo && (
@@ -122,12 +125,20 @@ export function GameCard({ game }: GameCardProps) {
                     />
                   )}
                   <div className="flex-1">
-                    <div className={`font-bold text-xl ${team1IsWinner ? 'text-green-700 dark:text-green-400' : ''}`}>
-                      {team1?.team?.abbreviation || 'TBD'}
+                    <div className="flex items-center gap-2">
+                      <div className={`font-bold text-xl ${team1IsWinner ? 'text-green-700 dark:text-green-400' : ''}`}>
+                        {team1?.team?.abbreviation || 'TBD'}
+                      </div>
+                      {team1IsWinner && <span className="text-lg">👑</span>}
                     </div>
                     <div className="text-sm text-muted-foreground truncate">
                       {team1?.team?.displayName || 'Team Name TBD'}
                     </div>
+                    {team1?.records?.[0]?.summary && (
+                      <div className="text-xs text-muted-foreground mt-0.5">
+                        {team1.records[0].summary}
+                      </div>
+                    )}
                   </div>
                 </div>
                 
@@ -145,7 +156,7 @@ export function GameCard({ game }: GameCardProps) {
 
               {/* Team 2 */}
               <div className={`flex items-center justify-between p-3 rounded-lg transition-all ${
-                team2IsWinner ? 'bg-green-50 dark:bg-green-950/30 border-2 border-green-500 dark:border-green-700' : ''
+                team2IsWinner ? 'bg-green-50 dark:bg-green-950/30 border-2 border-green-500 dark:border-green-700 shadow-md' : ''
               }`}>
                 <div className="flex items-center space-x-3 flex-1">
                   {team2?.team?.logo && (
@@ -159,12 +170,20 @@ export function GameCard({ game }: GameCardProps) {
                     />
                   )}
                   <div className="flex-1">
-                    <div className={`font-bold text-xl ${team2IsWinner ? 'text-green-700 dark:text-green-400' : ''}`}>
-                      {team2?.team?.abbreviation || 'TBD'}
+                    <div className="flex items-center gap-2">
+                      <div className={`font-bold text-xl ${team2IsWinner ? 'text-green-700 dark:text-green-400' : ''}`}>
+                        {team2?.team?.abbreviation || 'TBD'}
+                      </div>
+                      {team2IsWinner && <span className="text-lg">👑</span>}
                     </div>
                     <div className="text-sm text-muted-foreground truncate">
                       {team2?.team?.displayName || 'Team Name TBD'}
                     </div>
+                    {team2?.records?.[0]?.summary && (
+                      <div className="text-xs text-muted-foreground mt-0.5">
+                        {team2.records[0].summary}
+                      </div>
+                    )}
                   </div>
                 </div>
                 
@@ -188,15 +207,28 @@ export function GameCard({ game }: GameCardProps) {
               )}
 
               {isUpcoming && (
-                <div className="text-sm text-center text-muted-foreground">
-                  <Clock className="w-4 h-4 inline mr-1" />
-                  {formatGameDate(game.date)}
+                <div className="space-y-2">
+                  <div className="text-sm text-center text-muted-foreground">
+                    <Clock className="w-4 h-4 inline mr-1" />
+                    {formatGameDate(game.date)}
+                  </div>
+                  {broadcasts && broadcasts.length > 0 && (
+                    <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
+                      <Television className="w-3 h-3" />
+                      <span>{broadcasts.map(b => b.names?.join(', ')).join(', ')}</span>
+                    </div>
+                  )}
                 </div>
               )}
 
               {isCompleted && (
-                <div className="text-sm text-center text-muted-foreground">
-                  Final - {formatGameDateShort(game.date)}
+                <div className="text-sm text-center">
+                  <div className="font-bold text-base text-foreground mb-1">
+                    🏁 FINAL
+                  </div>
+                  <div className="text-muted-foreground text-xs">
+                    {formatGameDateShort(game.date)}
+                  </div>
                 </div>
               )}
             </div>
