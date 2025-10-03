@@ -20,8 +20,29 @@ interface GameCardProps {
 export function GameCard({ game }: GameCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   
-  const competition = game.competitions[0];
-  const [team1, team2] = competition.competitors;
+  const competition = game.competitions?.[0];
+  if (!competition) {
+    return (
+      <Card className="w-full max-w-md p-6">
+        <div className="text-center text-muted-foreground">
+          No game data available
+        </div>
+      </Card>
+    );
+  }
+  
+  const competitors = competition.competitors || [];
+  if (competitors.length < 2) {
+    return (
+      <Card className="w-full max-w-md p-6">
+        <div className="text-center text-muted-foreground">
+          Incomplete team data
+        </div>
+      </Card>
+    );
+  }
+  
+  const [team1, team2] = competitors;
   const situation = competition.situation;
   const status = game.status;
   
@@ -65,20 +86,22 @@ export function GameCard({ game }: GameCardProps) {
               {/* Team 1 */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <img 
-                    src={team1.team.logo} 
-                    alt={team1.team.name}
-                    className="w-8 h-8 object-contain"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
+                  {team1?.team?.logo && (
+                    <img 
+                      src={team1.team.logo} 
+                      alt={team1.team.name || 'Team'}
+                      className="w-8 h-8 object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  )}
                   <div>
                     <div className="font-semibold text-lg">
-                      {team1.team.abbreviation}
+                      {team1?.team?.abbreviation || 'TBD'}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {team1.team.displayName}
+                      {team1?.team?.displayName || 'Team Name TBD'}
                     </div>
                   </div>
                 </div>
@@ -98,20 +121,22 @@ export function GameCard({ game }: GameCardProps) {
               {/* Team 2 */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <img 
-                    src={team2.team.logo} 
-                    alt={team2.team.name}
-                    className="w-8 h-8 object-contain"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
+                  {team2?.team?.logo && (
+                    <img 
+                      src={team2.team.logo} 
+                      alt={team2.team.name || 'Team'}
+                      className="w-8 h-8 object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  )}
                   <div>
                     <div className="font-semibold text-lg">
-                      {team2.team.abbreviation}
+                      {team2?.team?.abbreviation || 'TBD'}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {team2.team.displayName}
+                      {team2?.team?.displayName || 'Team Name TBD'}
                     </div>
                   </div>
                 </div>
@@ -178,22 +203,24 @@ export function GameCard({ game }: GameCardProps) {
             {/* Detailed Team Info */}
             <div className="space-y-3 mb-4">
               {[team1, team2].map((team, index) => (
-                <div key={team.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div key={team?.id || index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div className="flex items-center space-x-3">
-                    <img 
-                      src={team.team.logo} 
-                      alt={team.team.name}
-                      className="w-6 h-6 object-contain"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
+                    {team?.team?.logo && (
+                      <img 
+                        src={team.team.logo} 
+                        alt={team.team.name || 'Team'}
+                        className="w-6 h-6 object-contain"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    )}
                     <div>
                       <div className="font-semibold text-sm">
-                        {team.team.abbreviation}
+                        {team?.team?.abbreviation || 'TBD'}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        Record: {team.records?.[0]?.summary || 'N/A'}
+                        Record: {team?.records?.[0]?.summary || 'N/A'}
                       </div>
                     </div>
                   </div>
@@ -203,7 +230,7 @@ export function GameCard({ game }: GameCardProps) {
                     </div>
                     {isLive && (
                       <div className="text-xs text-muted-foreground">
-                        TO: {team.timeouts || 0}
+                        TO: {team?.timeouts || 0}
                       </div>
                     )}
                   </div>
@@ -284,7 +311,7 @@ export function GameCard({ game }: GameCardProps) {
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Final Score:</span>
                   <span className="font-medium">
-                    {team1.team.abbreviation} {getTeamScore(team1)} - {getTeamScore(team2)} {team2.team.abbreviation}
+                    {team1?.team?.abbreviation || 'TBD'} {getTeamScore(team1)} - {getTeamScore(team2)} {team2?.team?.abbreviation || 'TBD'}
                   </span>
                 </div>
                 

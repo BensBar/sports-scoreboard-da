@@ -1,7 +1,9 @@
 import { ESPNTeam } from '@/types/sports';
 
 export function getTeamScore(team: ESPNTeam): number {
-  return parseInt(team.score) || 0;
+  if (!team || !team.score) return 0;
+  const score = parseInt(team.score);
+  return isNaN(score) ? 0 : score;
 }
 
 export function formatTimeRemaining(displayClock?: string): string {
