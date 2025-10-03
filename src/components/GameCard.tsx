@@ -87,7 +87,9 @@ export function GameCard({ game }: GameCardProps) {
             {/* Status Header */}
             <div className="flex items-center justify-between mb-6">
               <Badge 
-                className={`${getGameStatusColor(status)} text-white font-medium`}
+                className={`${getGameStatusColor(status)} text-white font-medium ${
+                  isCompleted ? 'text-lg px-4 py-2' : ''
+                }`}
               >
                 {isLive && <Timer className="w-3 h-3 mr-1" />}
                 {isUpcoming && <Clock className="w-3 h-3 mr-1" />}
@@ -128,6 +130,11 @@ export function GameCard({ game }: GameCardProps) {
                     <div className="text-sm text-muted-foreground truncate">
                       {team1?.team?.displayName || 'Team Name TBD'}
                     </div>
+                    {team1?.records?.[0]?.summary && (
+                      <div className="text-xs text-muted-foreground mt-0.5">
+                        {team1.records[0].summary}
+                      </div>
+                    )}
                   </div>
                 </div>
                 
@@ -165,6 +172,11 @@ export function GameCard({ game }: GameCardProps) {
                     <div className="text-sm text-muted-foreground truncate">
                       {team2?.team?.displayName || 'Team Name TBD'}
                     </div>
+                    {team2?.records?.[0]?.summary && (
+                      <div className="text-xs text-muted-foreground mt-0.5">
+                        {team2.records[0].summary}
+                      </div>
+                    )}
                   </div>
                 </div>
                 
@@ -188,9 +200,19 @@ export function GameCard({ game }: GameCardProps) {
               )}
 
               {isUpcoming && (
-                <div className="text-sm text-center text-muted-foreground">
-                  <Clock className="w-4 h-4 inline mr-1" />
-                  {formatGameDate(game.date)}
+                <div className="space-y-2">
+                  <div className="text-sm text-center text-muted-foreground">
+                    <Clock className="w-4 h-4 inline mr-1" />
+                    {formatGameDate(game.date)}
+                  </div>
+                  {broadcasts && broadcasts.length > 0 && (
+                    <div className="text-sm text-center">
+                      <Television className="w-4 h-4 inline mr-1 text-muted-foreground" />
+                      <span className="font-medium">
+                        {broadcasts.map(b => b.names?.join(', ')).join(', ')}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
 
