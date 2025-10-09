@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Timer } from '@phosphor-icons/react';
 import { Game } from '@/types/sports';
-import { getTeamScore, getGameStatusText, getGameStatusColor } from '@/lib/sports-utils';
+import { getTeamScore, getGameStatusText, getGameStatusColor, formatSituation } from '@/lib/sports-utils';
 
 interface SimpleGameCardProps {
   game: Game;
@@ -36,6 +36,7 @@ export function SimpleGameCard({ game }: SimpleGameCardProps) {
   const status = game.status;
   const isLive = status.type.state === 'in';
   const isUpcoming = status.type.state === 'pre';
+  const situation = competition.situation;
   
   return (
     <Card className="p-4 bg-white border-2 border-green-500">
@@ -110,6 +111,11 @@ export function SimpleGameCard({ game }: SimpleGameCardProps) {
       </div>
       
       {/* Debug Info */}
+      {isLive && situation?.down && (
+        <div className="mt-3 text-sm text-muted-foreground">
+          {formatSituation(situation?.down, situation?.distance, situation?.yardLine, situation?.lastPlay?.text, 100)}
+        </div>
+      )}
       <div className="mt-4 p-2 bg-gray-100 rounded text-xs">
         <div>Game ID: {game.id}</div>
         <div>League: {game.league}</div>

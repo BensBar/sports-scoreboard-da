@@ -9,6 +9,7 @@ import {
   getTeamScore, 
   formatTimeRemaining, 
   formatDownAndDistance, 
+  formatSituation,
   getGameStatusText, 
   getGameStatusColor,
   formatGameDate,
@@ -103,9 +104,14 @@ export function GameCard({ game }: GameCardProps) {
               </Badge>
               
               <div className="flex items-center space-x-2">
-                {isLive && situation?.down && situation?.distance && (
+                {isLive && situation?.down && (
                   <div className="text-xs text-muted-foreground">
-                    {formatDownAndDistance(situation.down, situation.distance)}
+                    {formatSituation(
+                      situation?.down,
+                      situation?.distance,
+                      situation?.yardLine,
+                      situation?.lastPlay?.text
+                    )}
                   </div>
                 )}
                 <FlipHorizontal className="w-4 h-4 text-muted-foreground" />

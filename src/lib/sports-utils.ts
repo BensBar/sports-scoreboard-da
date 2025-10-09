@@ -12,14 +12,45 @@ export function formatTimeRemaining(displayClock?: string): string {
 }
 
 export function formatDownAndDistance(down?: number, distance?: number): string {
-  if (!down || !distance) return '';
-  
-  if (down === 1) return `1st & ${distance}`;
-  if (down === 2) return `2nd & ${distance}`;
-  if (down === 3) return `3rd & ${distance}`;
-  if (down === 4) return `4th & ${distance}`;
-  
+  if (!down) return '';
+
+  const distText = (distance === 0) ? 'Goal' : (distance === undefined || distance === null) ? '?' : String(distance);
+
+  if (down === 1) return `1st & ${distText}`;
+  if (down === 2) return `2nd & ${distText}`;
+  if (down === 3) return `3rd & ${distText}`;
+  if (down === 4) return `4th & ${distText}`;
   return '';
+}
+
+/**
+ * Format a compact situation string that includes down/distance, yard line and an optional play description.
+ * Example: "1st & 8 at the 32 - Michael Penix Jr. throws for 68 yard TD"
+ */
+export function formatSituation(
+  down?: number,
+  distance?: number,
+  yardLine?: number,
+  lastPlayText?: string,
+  maxPlayLength = 80
+): string {
+  const dd = formatDownAndDistance(down, distance);
+  // Display yard line as "on their own <yard>" to indicate field position from team's perspective
+  const yard = yardLine !== undefined && yardLine !== null ? `on their own ${yardLine}` : '';
+
+  const parts: string[] = [];
+  if (dd) parts.push(dd.replace('&', '/').replace(/\s+/g, ' ')); // make & into /
+  if (yard) parts.push(yard);
+
+  let result = parts.join(' ');
+  if (lastPlayText) {
+    const cleaned = lastPlayText.replace(/\s+/g, ' ').trim();
+    const truncated = cleaned.length > maxPlayLength ? cleaned.slice(0, maxPlayLength).trim() + '…' : cleaned;
+    if (result) result = `${result} - ${truncated}`;
+    else result = truncated;
+  }
+
+  return result;
 }
 
 export function getGameStatusText(status: any): string {
