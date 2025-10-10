@@ -69,14 +69,18 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
     return team.timeouts !== undefined ? team.timeouts : 3;
   };
 
-  // Check possession (case-insensitive comparison)
-  const possessionTeam = situation?.possession?.toLowerCase();
-  const team1HasPossession = possessionTeam === team1.team.id.toLowerCase() || 
-                             possessionTeam === team1.id.toLowerCase() ||
-                             possessionTeam === team1.team.abbreviation.toLowerCase();
-  const team2HasPossession = possessionTeam === team2.team.id.toLowerCase() || 
-                             possessionTeam === team2.id.toLowerCase() ||
-                             possessionTeam === team2.team.abbreviation.toLowerCase();
+  // Helper function to check if a team has possession (case-insensitive comparison)
+  const checkPossession = (team: ESPNTeam, possessionId?: string): boolean => {
+    if (!possessionId) return false;
+    const possessionLower = possessionId.toLowerCase();
+    return possessionLower === team.team.id.toLowerCase() || 
+           possessionLower === team.id.toLowerCase() ||
+           possessionLower === team.team.abbreviation.toLowerCase();
+  };
+
+  // Check possession
+  const team1HasPossession = checkPossession(team1, situation?.possession);
+  const team2HasPossession = checkPossession(team2, situation?.possession);
 
   // Render team panel
   const renderTeamPanel = (team: ESPNTeam, hasPossession: boolean) => {
@@ -99,14 +103,16 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
         )}
 
         {/* Team Logo */}
-        <img 
-          src={team.team.logo} 
-          alt={`${team.team.displayName} logo`}
-          className="h-32 w-32 object-contain"
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = 'none';
-          }}
-        />
+        {team.team.logo && (
+          <img 
+            src={team.team.logo} 
+            alt={`${team.team.displayName} logo`}
+            className="h-32 w-32 object-contain"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
+          />
+        )}
 
         {/* Team Info */}
         <div className="text-center space-y-2">
@@ -163,10 +169,10 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
       </div>
 
       {/* Main Area - Team Panels */}
-      <div className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 p-8">
+      <main className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 p-8">
         {renderTeamPanel(team1, team1HasPossession)}
         {renderTeamPanel(team2, team2HasPossession)}
-      </div>
+      </main>
 
       {/* Last Play Text */}
       {situation?.lastPlay?.text && (
