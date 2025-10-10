@@ -44,7 +44,8 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
   const quarter = period === 1 ? 'Q1' : 
                  period === 2 ? 'Q2' : 
                  period === 3 ? 'Q3' : 
-                 period === 4 ? 'Q4' : `OT${period - 4}`;
+                 period === 4 ? 'Q4' : 
+                 period === 5 ? 'OT' : `OT${period - 4}`;
   
   // Format down & distance with yard line
   const downDistanceText = formatDownAndDistance(situation?.down, situation?.distance);
@@ -177,7 +178,7 @@ function TeamPanel({ team, score, hasPossession, timeouts = 3 }: TeamPanelProps)
         )}
         
         {/* Score - Large and Prominent */}
-        <div className="text-7xl font-bold tabular-nums mb-6" style={{ fontVariantNumeric: 'tabular-nums' }}>
+        <div className="text-7xl font-bold tabular-nums mb-6">
           {score}
         </div>
         
