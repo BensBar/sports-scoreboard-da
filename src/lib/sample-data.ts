@@ -53,7 +53,7 @@ export const sampleNFLGames: Game[] = [
         down: 1,
         distance: 10,
         yardLine: 35,
-        possession: 'BUF'
+        possession: 'team-2'
       },
       venue: {
         id: 'venue-1',
