@@ -15,6 +15,7 @@ import {
   formatGameDate,
   formatGameDateShort
 } from '@/lib/sports-utils';
+import { FullscreenGameOverlay } from '@/components/FullscreenGameOverlay';
 
 interface GameCardProps {
   game: Game;
@@ -22,6 +23,7 @@ interface GameCardProps {
 
 export function GameCard({ game }: GameCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [showFullscreen, setShowFullscreen] = useState(false);
   
   const competition = game.competitions?.[0];
   if (!competition) {
@@ -114,6 +116,18 @@ export function GameCard({ game }: GameCardProps) {
                     )}
                   </div>
                 )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowFullscreen(true);
+                  }}
+                  aria-label="Open fullscreen view"
+                >
+                  <ArrowsOut className="w-4 h-4" />
+                </Button>
                 <FlipHorizontal className="w-4 h-4 text-muted-foreground" />
               </div>
             </div>
@@ -743,6 +757,14 @@ export function GameCard({ game }: GameCardProps) {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Fullscreen Overlay */}
+      {showFullscreen && (
+        <FullscreenGameOverlay 
+          game={game} 
+          onClose={() => setShowFullscreen(false)} 
+        />
+      )}
     </div>
   );
 }
