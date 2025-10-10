@@ -169,7 +169,10 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
       </div>
 
       {/* Main Area - Team Panels */}
-      <main className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 p-8">
+      <main 
+        className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 p-8"
+        aria-label="Live game broadcast information"
+      >
         {renderTeamPanel(team1, team1HasPossession)}
         {renderTeamPanel(team2, team2HasPossession)}
       </main>
