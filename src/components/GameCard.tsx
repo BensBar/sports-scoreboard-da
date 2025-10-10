@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Clock, Timer, FlipHorizontal, MapPin, Television, TrendUp, ArrowsOut, User, ChartBar, ListDashes } from '@phosphor-icons/react';
+import { Clock, Timer, FlipHorizontal, MapPin, Television, TrendUp, ArrowsOut, User, ChartBar, ListDashes, Broadcast } from '@phosphor-icons/react';
 import { Game } from '@/types/sports';
 import { 
   getTeamScore, 
@@ -15,6 +15,7 @@ import {
   formatGameDate,
   formatGameDateShort
 } from '@/lib/sports-utils';
+import { FullscreenGameOverlay } from './FullscreenGameOverlay';
 
 interface GameCardProps {
   game: Game;
@@ -22,6 +23,7 @@ interface GameCardProps {
 
 export function GameCard({ game }: GameCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [showFullscreen, setShowFullscreen] = useState(false);
   
   const competition = game.competitions?.[0];
   if (!competition) {
@@ -113,6 +115,20 @@ export function GameCard({ game }: GameCardProps) {
                       situation?.lastPlay?.text
                     )}
                   </div>
+                )}
+                {isLive && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowFullscreen(true);
+                    }}
+                    title="Open broadcast overlay"
+                  >
+                    <Broadcast className="w-4 h-4" />
+                  </Button>
                 )}
                 <FlipHorizontal className="w-4 h-4 text-muted-foreground" />
               </div>
@@ -743,6 +759,14 @@ export function GameCard({ game }: GameCardProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Fullscreen Game Overlay */}
+      {showFullscreen && (
+        <FullscreenGameOverlay 
+          game={game} 
+          onClose={() => setShowFullscreen(false)} 
+        />
+      )}
     </div>
   );
 }
