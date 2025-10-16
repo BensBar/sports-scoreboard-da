@@ -285,14 +285,14 @@ export function GameCard({ game }: GameCardProps) {
                       <ArrowsOut className="w-4 h-4" />
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                  <DialogContent className="fixed inset-0 w-screen h-screen overflow-y-auto bg-background p-8 rounded-none border-0 shadow-none" onClick={(e) => e.stopPropagation()}>
                     <DialogHeader>
-                      <DialogTitle className="text-2xl">
+                      <DialogTitle className="text-3xl">
                         {team1?.team?.displayName} vs {team2?.team?.displayName}
                       </DialogTitle>
                     </DialogHeader>
                     
-                    <div className="space-y-6 py-4">
+                    <div className="space-y-8 py-6">
                       {/* Large Score Display */}
                       <div className="flex items-center justify-around py-6 bg-muted/30 rounded-lg">
                         <div className="text-center">
@@ -300,27 +300,27 @@ export function GameCard({ game }: GameCardProps) {
                             <img 
                               src={team1.team.logo} 
                               alt={team1.team.name || 'Team'}
-                              className="w-24 h-24 object-contain mx-auto mb-4"
+                              className="w-32 h-32 object-contain mx-auto mb-4"
                             />
                           )}
-                          <div className={`text-5xl font-bold mb-2 ${team1IsWinner ? 'text-green-600' : 'text-primary'}`}>
+                          <div className={`text-6xl font-bold mb-2 ${team1IsWinner ? 'text-green-600' : 'text-primary'}`}>
                             {getTeamScore(team1)}
                           </div>
                           <div className="text-xl font-semibold">{team1?.team?.abbreviation}</div>
                           <div className="text-sm text-muted-foreground">{team1?.records?.[0]?.summary}</div>
                         </div>
                         
-                        <div className="text-3xl font-bold text-muted-foreground">VS</div>
+                        <div className="text-4xl font-bold text-muted-foreground">VS</div>
                         
                         <div className="text-center">
                           {team2?.team?.logo && (
                             <img 
                               src={team2.team.logo} 
                               alt={team2.team.name || 'Team'}
-                              className="w-24 h-24 object-contain mx-auto mb-4"
+                              className="w-32 h-32 object-contain mx-auto mb-4"
                             />
                           )}
-                          <div className={`text-5xl font-bold mb-2 ${team2IsWinner ? 'text-green-600' : 'text-primary'}`}>
+                          <div className={`text-6xl font-bold mb-2 ${team2IsWinner ? 'text-green-600' : 'text-primary'}`}>
                             {getTeamScore(team2)}
                           </div>
                           <div className="text-xl font-semibold">{team2?.team?.abbreviation}</div>
@@ -374,7 +374,7 @@ export function GameCard({ game }: GameCardProps) {
                             Betting Lines {odds.provider && `via ${odds.provider.name}`}
                           </div>
                           
-                          <div className="grid grid-cols-3 gap-4">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {odds.spread !== undefined && (
                               <div>
                                 <div className="text-xs text-muted-foreground mb-1">Spread</div>
@@ -472,7 +472,7 @@ export function GameCard({ game }: GameCardProps) {
                             Play-by-Play
                           </div>
                           
-                          <div className="space-y-4 max-h-96 overflow-y-auto">
+                          <div className="space-y-4 max-h-[60vh] overflow-y-auto">
                             {drives.map((drive) => (
                               <div key={drive.id} className="border-l-2 border-muted pl-4 space-y-2">
                                 {/* Drive Header */}
