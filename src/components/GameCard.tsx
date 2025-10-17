@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Clock, Timer, FlipHorizontal, MapPin, Television, TrendUp, ArrowsOut, User, ChartBar, ListDashes } from '@phosphor-icons/react';
 import { Game } from '@/types/sports';
 import { 
@@ -230,6 +229,13 @@ export function GameCard({ game }: GameCardProps) {
                   </div>
                 </div>
               )}
+              
+              {isLive && broadcasts && broadcasts.length > 0 && (
+                <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground mt-2">
+                  <Television className="w-3 h-3" />
+                  <span>{broadcasts.map(b => b.names?.join(', ')).join(', ')}</span>
+                </div>
+              )}
 
               {isUpcoming && (
                 <div className="space-y-2">
@@ -254,6 +260,12 @@ export function GameCard({ game }: GameCardProps) {
                   <div className="text-muted-foreground text-xs">
                     {formatGameDateShort(game.date)}
                   </div>
+                  {broadcasts && broadcasts.length > 0 && (
+                    <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground mt-2">
+                      <Television className="w-3 h-3" />
+                      <span>{broadcasts.map(b => b.names?.join(', ')).join(', ')}</span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -274,271 +286,18 @@ export function GameCard({ game }: GameCardProps) {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-lg">Game Details</h3>
               <div className="flex items-center gap-2">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <ArrowsOut className="w-4 h-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="fixed inset-0 w-screen h-screen overflow-y-auto bg-background p-8 rounded-none border-0 shadow-none" onClick={(e) => e.stopPropagation()}>
-                    <DialogHeader>
-                      <DialogTitle className="text-3xl">
-                        {team1?.team?.displayName} vs {team2?.team?.displayName}
-                      </DialogTitle>
-                    </DialogHeader>
-                    
-                    <div className="space-y-8 py-6">
-                      {/* Large Score Display */}
-                      <div className="flex items-center justify-around py-6 bg-muted/30 rounded-lg">
-                        <div className="text-center">
-                          {team1?.team?.logo && (
-                            <img 
-                              src={team1.team.logo} 
-                              alt={team1.team.name || 'Team'}
-                              className="w-32 h-32 object-contain mx-auto mb-4"
-                            />
-                          )}
-                          <div className={`text-6xl font-bold mb-2 ${team1IsWinner ? 'text-green-600' : 'text-primary'}`}>
-                            {getTeamScore(team1)}
-                          </div>
-                          <div className="text-xl font-semibold">{team1?.team?.abbreviation}</div>
-                          <div className="text-sm text-muted-foreground">{team1?.records?.[0]?.summary}</div>
-                        </div>
-                        
-                        <div className="text-4xl font-bold text-muted-foreground">VS</div>
-                        
-                        <div className="text-center">
-                          {team2?.team?.logo && (
-                            <img 
-                              src={team2.team.logo} 
-                              alt={team2.team.name || 'Team'}
-                              className="w-32 h-32 object-contain mx-auto mb-4"
-                            />
-                          )}
-                          <div className={`text-6xl font-bold mb-2 ${team2IsWinner ? 'text-green-600' : 'text-primary'}`}>
-                            {getTeamScore(team2)}
-                          </div>
-                          <div className="text-xl font-semibold">{team2?.team?.abbreviation}</div>
-                          <div className="text-sm text-muted-foreground">{team2?.records?.[0]?.summary}</div>
-                        </div>
-                      </div>
-
-                      {/* Game Status */}
-                      <div className="text-center">
-                        <Badge className={`${getGameStatusColor(status)} text-white font-medium text-lg px-4 py-2`}>
-                          {isLive && <Timer className="w-4 h-4 mr-2" />}
-                          {isUpcoming && <Clock className="w-4 h-4 mr-2" />}
-                          {isCompleted && <span className="mr-2">🏁</span>}
-                          {getGameStatusText(status)}
-                        </Badge>
-                      </div>
-
-                      {/* Venue & Broadcast */}
-                      <div className="grid grid-cols-2 gap-4">
-                        {venue && (
-                          <div className="space-y-1 p-4 bg-muted/30 rounded-lg">
-                            <div className="font-semibold text-muted-foreground uppercase text-xs flex items-center">
-                              <MapPin className="w-4 h-4 mr-1" />
-                              Venue
-                            </div>
-                            <div className="font-medium">{venue.fullName}</div>
-                            {venue.address && (
-                              <div className="text-sm text-muted-foreground">
-                                {venue.address.city}, {venue.address.state}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                        
-                        {broadcasts && broadcasts.length > 0 && (
-                          <div className="space-y-1 p-4 bg-muted/30 rounded-lg">
-                            <div className="font-semibold text-muted-foreground uppercase text-xs flex items-center">
-                              <Television className="w-4 h-4 mr-1" />
-                              Broadcast
-                            </div>
-                            <div className="font-medium">{broadcasts.map(b => b.names?.join(', ')).join(', ')}</div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Betting Odds */}
-                      {odds && (
-                        <div className="space-y-3 p-4 bg-muted/30 rounded-lg">
-                          <div className="font-semibold text-muted-foreground uppercase text-xs flex items-center">
-                            <TrendUp className="w-4 h-4 mr-1" />
-                            Betting Lines {odds.provider && `via ${odds.provider.name}`}
-                          </div>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {odds.spread !== undefined && (
-                              <div>
-                                <div className="text-xs text-muted-foreground mb-1">Spread</div>
-                                <div className="font-semibold">
-                                  {odds.awayTeamOdds?.favorite ? team1?.team?.abbreviation : team2?.team?.abbreviation} {Math.abs(odds.spread) > 0 ? odds.spread : 'PK'}
-                                </div>
-                              </div>
-                            )}
-                            
-                            {odds.overUnder !== undefined && (
-                              <div>
-                                <div className="text-xs text-muted-foreground mb-1">Over/Under</div>
-                                <div className="font-semibold">{odds.overUnder}</div>
-                              </div>
-                            )}
-                            
-                            {(odds.homeTeamOdds?.moneyLine || odds.awayTeamOdds?.moneyLine) && (
-                              <div>
-                                <div className="text-xs text-muted-foreground mb-1">Money Line</div>
-                                <div className="space-y-1 text-sm">
-                                  {odds.awayTeamOdds?.moneyLine && (
-                                    <div>{team1?.team?.abbreviation}: {odds.awayTeamOdds.moneyLine > 0 ? '+' : ''}{odds.awayTeamOdds.moneyLine}</div>
-                                  )}
-                                  {odds.homeTeamOdds?.moneyLine && (
-                                    <div>{team2?.team?.abbreviation}: {odds.homeTeamOdds.moneyLine > 0 ? '+' : ''}{odds.homeTeamOdds.moneyLine}</div>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Game Notes */}
-                      {notes && notes.length > 0 && (
-                        <div className="space-y-2">
-                          <div className="font-semibold text-muted-foreground uppercase text-xs">Game Notes</div>
-                          {notes.map((note, idx) => (
-                            <div key={idx} className="text-sm leading-relaxed bg-muted/50 p-3 rounded">
-                              {note.headline}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Last Play (if live) */}
-                      {isLive && situation?.lastPlay && (
-                        <div className="space-y-2">
-                          <div className="font-semibold text-muted-foreground uppercase text-xs">Last Play</div>
-                          <div className="text-sm leading-relaxed bg-muted/50 p-3 rounded">
-                            {situation.lastPlay.text}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Team Statistics */}
-                      {statistics && (isLive || isCompleted) && (
-                        <div className="space-y-3 p-4 bg-muted/30 rounded-lg">
-                          <div className="font-semibold text-muted-foreground uppercase text-xs flex items-center">
-                            <ChartBar className="w-4 h-4 mr-1" />
-                            Team Statistics
-                          </div>
-                          
-                          <div className="grid grid-cols-2 gap-6">
-                            {/* Team 1 Stats */}
-                            <div className="space-y-2">
-                              <div className="font-semibold text-sm mb-3">{team1?.team?.abbreviation}</div>
-                              {statistics['team-1']?.map((stat, idx) => (
-                                <div key={idx} className="flex justify-between text-sm">
-                                  <span className="text-muted-foreground">{stat.name}</span>
-                                  <span className="font-medium">{stat.displayValue}</span>
-                                </div>
-                              ))}
-                            </div>
-                            
-                            {/* Team 2 Stats */}
-                            <div className="space-y-2">
-                              <div className="font-semibold text-sm mb-3">{team2?.team?.abbreviation}</div>
-                              {statistics['team-2']?.map((stat, idx) => (
-                                <div key={idx} className="flex justify-between text-sm">
-                                  <span className="text-muted-foreground">{stat.name}</span>
-                                  <span className="font-medium">{stat.displayValue}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Play-by-Play Timeline */}
-                      {drives && drives.length > 0 && (isLive || isCompleted) && (
-                        <div className="space-y-4">
-                          <div className="font-semibold text-muted-foreground uppercase text-xs flex items-center">
-                            <ListDashes className="w-4 h-4 mr-1" />
-                            Play-by-Play
-                          </div>
-                          
-                          <div className="space-y-4 max-h-[60vh] overflow-y-auto">
-                            {drives.map((drive) => (
-                              <div key={drive.id} className="border-l-2 border-muted pl-4 space-y-2">
-                                {/* Drive Header */}
-                                <div className="flex items-start justify-between gap-2 sticky top-0 bg-background py-1">
-                                  <div className="font-semibold text-sm">
-                                    {drive.team.abbreviation} - {drive.description}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground whitespace-nowrap">
-                                    Q{drive.start.period.number} {drive.start.clock.displayValue}
-                                  </div>
-                                </div>
-                                
-                                {/* Drive Result */}
-                                {drive.result && (
-                                  <div className={`text-xs font-medium px-2 py-1 rounded inline-block ${
-                                    drive.result === 'Touchdown' 
-                                      ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
-                                      : drive.result === 'Field Goal'
-                                      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-                                      : 'bg-muted text-muted-foreground'
-                                  }`}>
-                                    {drive.result}
-                                  </div>
-                                )}
-                                
-                                {/* Plays */}
-                                <div className="space-y-1.5">
-                                  {drive.plays.map((play) => (
-                                    <div 
-                                      key={play.id} 
-                                      className={`text-xs p-2 rounded ${
-                                        play.scoringPlay 
-                                          ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' 
-                                          : 'bg-muted/30'
-                                      }`}
-                                    >
-                                      <div className="flex items-start justify-between gap-2">
-                                        <div className="flex-1">
-                                          <span className="font-medium text-muted-foreground">
-                                            {play.type.text}:
-                                          </span>{' '}
-                                          <span className={play.scoringPlay ? 'font-semibold' : ''}>
-                                            {play.text}
-                                          </span>
-                                        </div>
-                                        <div className="text-muted-foreground whitespace-nowrap text-[10px]">
-                                          {play.clock.displayValue}
-                                        </div>
-                                      </div>
-                                      {play.scoringPlay && (
-                                        <div className="mt-1 text-[10px] font-semibold text-green-600 dark:text-green-400">
-                                          {/* awayScore = first team (team1), homeScore = second team (team2) */}
-                                          Score: {play.awayScore} - {play.homeScore}
-                                        </div>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowFullscreen(true);
+                  }}
+                  aria-label="Open fullscreen view"
+                >
+                  <ArrowsOut className="w-4 h-4" />
+                </Button>
                 <FlipHorizontal className="w-4 h-4 text-muted-foreground" />
               </div>
             </div>

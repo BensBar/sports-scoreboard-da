@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
-import { X, Football } from '@phosphor-icons/react';
+import { createPortal } from 'react-dom';
+import { X, Football, MapPin, Television, Trophy } from '@phosphor-icons/react';
 import { Game, ESPNTeam } from '@/types/sports';
-import { getTeamScore, formatDownAndDistance } from '@/lib/sports-utils';
+import { getTeamScore, formatDownAndDistance, formatGameDate } from '@/lib/sports-utils';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 interface FullscreenGameOverlayProps {
   game: Game;
@@ -31,9 +33,18 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
   const [team1, team2] = competition.competitors;
   const situation = competition.situation;
   const status = game.status;
+  const venue = competition.venue;
+  const broadcasts = competition.broadcasts;
+  const odds = competition.odds?.[0];
+  const leaders = competition.leaders;
+  const notes = competition.notes;
   
   const team1Score = getTeamScore(team1);
   const team2Score = getTeamScore(team2);
+  
+  const isLive = status.type.state === 'in';
+  const isUpcoming = status.type.state === 'pre';
+  const isCompleted = status.type.state === 'post';
   
   // Determine possession
   const team1HasPossession = situation?.possession === team1.id;
@@ -52,13 +63,13 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
   const yardLineText = situation?.yardLine ? ` at ${situation.yardLine}` : '';
   const situationText = downDistanceText ? `${downDistanceText}${yardLineText}` : '';
 
-  return (
+  const overlayContent = (
     <div 
-      className="fixed inset-0 z-50 bg-black/95 flex flex-col text-white"
+      className="fixed inset-0 z-50 bg-black/95 flex flex-col text-white overflow-y-auto"
       onClick={onClose}
     >
       {/* Top Bar */}
-      <div className="flex items-center justify-between px-8 py-6 border-b border-white/10">
+      <div className="flex items-center justify-between px-8 py-6 border-b border-white/10 sticky top-0 bg-black/95 z-10">
         <div className="flex items-center gap-6 text-2xl font-bold">
           <span className="text-yellow-400">{quarter}</span>
           <span className="text-white/90">{status.displayClock || '0:00'}</span>
@@ -82,7 +93,7 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
 
       {/* Main Scoreboard Area */}
       <div 
-        className="flex-1 flex items-center justify-center px-8 py-12"
+        className="flex items-center justify-center px-8 py-12 min-h-[400px]"
         onClick={(e) => e.stopPropagation()}
         aria-live="polite"
         role="region"
@@ -110,13 +121,202 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
         </div>
       </div>
 
-      {/* Last Play */}
-      {situation?.lastPlay?.text && (
+      {/* Game Information Section */}
+      <div className="px-8 py-6 border-t border-white/10 bg-black/20">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Venue Information */}
+          {venue && (
+            <div className="space-y-2">
+              <div className="text-sm text-white/60 uppercase tracking-wider flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                Venue
+              </div>
+              <div className="text-base text-white/90">
+                {venue.fullName}
+              </div>
+              {venue.address && (
+                <div className="text-sm text-white/70">
+                  {venue.address.city}, {venue.address.state}
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* Down & Distance / Last Play */}
+          {(situationText || situation?.lastPlay?.text) && (
+            <div className="space-y-2">
+              <div className="text-sm text-white/60 uppercase tracking-wider">
+                {situationText ? 'Current Situation' : 'Last Play'}
+              </div>
+              {situationText && (
+                <div className="text-lg text-white/90 font-semibold">
+                  {situationText}
+                </div>
+              )}
+              {situation?.lastPlay?.text && (
+                <div className="text-sm text-white/80 leading-relaxed line-clamp-2">
+                  {situation.lastPlay.text}
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* Game Date/Time */}
+          <div className="space-y-2">
+            <div className="text-sm text-white/60 uppercase tracking-wider">
+              {isUpcoming ? 'Scheduled' : isLive ? 'Started' : 'Completed'}
+            </div>
+            <div className="text-base text-white/90">
+              {formatGameDate(game.date)}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Game Notes */}
+      {notes && notes.length > 0 && (
         <div className="px-8 py-6 border-t border-white/10">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-sm text-white/60 uppercase tracking-wider mb-2">Last Play</div>
-            <div className="text-lg text-white/90 leading-relaxed">
-              {situation.lastPlay.text}
+          <div className="max-w-6xl mx-auto">
+            <div className="text-sm text-white/60 uppercase tracking-wider mb-4">Game Notes</div>
+            <div className="space-y-2">
+              {notes.map((note, idx) => (
+                <div key={idx} className="text-base text-white/80 leading-relaxed">
+                  • {note.headline}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Betting Odds */}
+      {odds && (
+        <div className="px-8 py-6 border-t border-white/10 bg-black/20">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-sm text-white/60 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <Trophy className="w-4 h-4" />
+              Betting Information
+              {odds.provider?.name && (
+                <span className="text-white/40">• {odds.provider.name}</span>
+              )}
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {/* Spread */}
+              {odds.spread !== undefined && (
+                <div>
+                  <div className="text-xs text-white/50 mb-1">Spread</div>
+                  <div className="text-xl text-white/90 font-semibold">
+                    {odds.spread > 0 ? '+' : ''}{odds.spread}
+                  </div>
+                </div>
+              )}
+              
+              {/* Over/Under */}
+              {odds.overUnder !== undefined && (
+                <div>
+                  <div className="text-xs text-white/50 mb-1">Over/Under</div>
+                  <div className="text-xl text-white/90 font-semibold">
+                    {odds.overUnder}
+                  </div>
+                </div>
+              )}
+              
+              {/* Money Lines */}
+              {(odds.awayTeamOdds?.moneyLine || odds.homeTeamOdds?.moneyLine) && (
+                <>
+                  {odds.awayTeamOdds?.moneyLine && (
+                    <div>
+                      <div className="text-xs text-white/50 mb-1">{team1.team.abbreviation} ML</div>
+                      <div className="text-xl text-white/90 font-semibold">
+                        {odds.awayTeamOdds.moneyLine > 0 ? '+' : ''}{odds.awayTeamOdds.moneyLine}
+                      </div>
+                      {odds.awayTeamOdds.favorite && (
+                        <Badge className="mt-1 bg-yellow-500 text-black text-xs">Favorite</Badge>
+                      )}
+                    </div>
+                  )}
+                  {odds.homeTeamOdds?.moneyLine && (
+                    <div>
+                      <div className="text-xs text-white/50 mb-1">{team2.team.abbreviation} ML</div>
+                      <div className="text-xl text-white/90 font-semibold">
+                        {odds.homeTeamOdds.moneyLine > 0 ? '+' : ''}{odds.homeTeamOdds.moneyLine}
+                      </div>
+                      {odds.homeTeamOdds.favorite && (
+                        <Badge className="mt-1 bg-yellow-500 text-black text-xs">Favorite</Badge>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Game Leaders */}
+      {leaders && leaders.length > 0 && (
+        <div className="px-8 py-6 border-t border-white/10">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-sm text-white/60 uppercase tracking-wider mb-4">Game Leaders</div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {leaders.map((leaderCategory, idx) => (
+                <div key={idx} className="space-y-3">
+                  {leaderCategory.passing && (
+                    <div className="bg-white/5 rounded-lg p-4">
+                      <div className="text-xs text-white/50 mb-2">Passing</div>
+                      <div className="flex items-center gap-3">
+                        {leaderCategory.passing.headshot && (
+                          <img 
+                            src={leaderCategory.passing.headshot} 
+                            alt={leaderCategory.passing.name}
+                            className="w-12 h-12 rounded-full bg-white/10"
+                          />
+                        )}
+                        <div>
+                          <div className="text-white/90 font-semibold">{leaderCategory.passing.name}</div>
+                          <div className="text-white/70 text-sm">{leaderCategory.passing.stats}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {leaderCategory.rushing && (
+                    <div className="bg-white/5 rounded-lg p-4">
+                      <div className="text-xs text-white/50 mb-2">Rushing</div>
+                      <div className="flex items-center gap-3">
+                        {leaderCategory.rushing.headshot && (
+                          <img 
+                            src={leaderCategory.rushing.headshot} 
+                            alt={leaderCategory.rushing.name}
+                            className="w-12 h-12 rounded-full bg-white/10"
+                          />
+                        )}
+                        <div>
+                          <div className="text-white/90 font-semibold">{leaderCategory.rushing.name}</div>
+                          <div className="text-white/70 text-sm">{leaderCategory.rushing.stats}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {leaderCategory.receiving && (
+                    <div className="bg-white/5 rounded-lg p-4">
+                      <div className="text-xs text-white/50 mb-2">Receiving</div>
+                      <div className="flex items-center gap-3">
+                        {leaderCategory.receiving.headshot && (
+                          <img 
+                            src={leaderCategory.receiving.headshot} 
+                            alt={leaderCategory.receiving.name}
+                            className="w-12 h-12 rounded-full bg-white/10"
+                          />
+                        )}
+                        <div>
+                          <div className="text-white/90 font-semibold">{leaderCategory.receiving.name}</div>
+                          <div className="text-white/70 text-sm">{leaderCategory.receiving.stats}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -128,6 +328,8 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
       </div>
     </div>
   );
+  
+  return createPortal(overlayContent, document.body);
 }
 
 interface TeamPanelProps {
