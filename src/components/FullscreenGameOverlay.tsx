@@ -9,9 +9,10 @@ import { Badge } from '@/components/ui/badge';
 interface FullscreenGameOverlayProps {
   game: Game;
   onClose: () => void;
+  onRefresh?: () => void;
 }
 
-export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayProps) {
+export function FullscreenGameOverlay({ game, onClose, onRefresh }: FullscreenGameOverlayProps) {
   const competition = game.competitions?.[0];
   
   // ESC key handler
@@ -25,6 +26,21 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
   }, [onClose]);
+
+  // Auto-refresh handler - refreshes every 8 seconds when in fullscreen
+  useEffect(() => {
+    if (!onRefresh) return;
+    
+    const refreshInterval = setInterval(() => {
+      try {
+        onRefresh();
+      } catch (error) {
+        console.error('Failed to refresh game data:', error);
+      }
+    }, 8000); // 8 seconds for a good balance
+    
+    return () => clearInterval(refreshInterval);
+  }, [onRefresh]);
 
   if (!competition || competition.competitors.length < 2) {
     return null;
@@ -73,15 +89,7 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
       onClick={onClose}
     >
       {/* Top Bar */}
-      <div className="flex items-center justify-between px-8 py-6 border-b border-white/10 sticky top-0 bg-black/95 z-10">
-        <div className="flex items-center gap-6 text-2xl font-bold">
-          <span className="text-yellow-400">{quarter}</span>
-          <span className="text-white/90">{status.displayClock || '0:00'}</span>
-          {situationText && (
-            <span className="text-white/70 text-xl">{situationText}</span>
-          )}
-        </div>
-        
+      <div className="flex items-center justify-end px-8 py-6 border-b border-white/10 sticky top-0 bg-black/95 z-10">
         <Button 
           variant="ghost" 
           size="icon"
@@ -95,9 +103,29 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
         </Button>
       </div>
 
+      {/* Prominent Game Clock Display */}
+      <div 
+        className="flex flex-col items-center justify-center px-8 pt-8 pb-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-8 mb-2">
+          <div className="text-5xl font-bold text-yellow-400 tracking-wide">
+            {quarter}
+          </div>
+          <div className="text-6xl font-bold text-white tabular-nums tracking-tight">
+            {status.displayClock || '0:00'}
+          </div>
+        </div>
+        {situationText && (
+          <div className="text-2xl text-white/80 font-medium mt-2">
+            {situationText}
+          </div>
+        )}
+      </div>
+
       {/* Main Scoreboard Area */}
       <div 
-        className="flex items-center justify-center px-8 py-12 min-h-[400px]"
+        className="flex items-center justify-center px-8 py-8 min-h-[400px]"
         onClick={(e) => e.stopPropagation()}
         aria-live="polite"
         role="region"
@@ -386,7 +414,7 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
 
       {/* Footer */}
       <div className="px-8 py-4 border-t border-white/10 text-center text-sm text-white/40">
-        Updates every 30 seconds • Live game data from ESPN
+        Auto-refreshes every 8 seconds • Live game data from ESPN
       </div>
     </div>
   );
