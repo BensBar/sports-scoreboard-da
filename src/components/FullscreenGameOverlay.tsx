@@ -12,6 +12,8 @@ interface FullscreenGameOverlayProps {
   onRefresh?: () => void;
 }
 
+const REFRESH_INTERVAL_MS = 8000; // 8 seconds
+
 export function FullscreenGameOverlay({ game, onClose, onRefresh }: FullscreenGameOverlayProps) {
   const competition = game.competitions?.[0];
   
@@ -27,7 +29,7 @@ export function FullscreenGameOverlay({ game, onClose, onRefresh }: FullscreenGa
     return () => window.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
-  // Auto-refresh handler - refreshes every 8 seconds when in fullscreen
+  // Auto-refresh handler - refreshes at regular intervals when in fullscreen
   useEffect(() => {
     if (!onRefresh) return;
     
@@ -37,7 +39,7 @@ export function FullscreenGameOverlay({ game, onClose, onRefresh }: FullscreenGa
       } catch (error) {
         console.error('Failed to refresh game data:', error);
       }
-    }, 8000); // 8 seconds for a good balance
+    }, REFRESH_INTERVAL_MS);
     
     return () => clearInterval(refreshInterval);
   }, [onRefresh]);
