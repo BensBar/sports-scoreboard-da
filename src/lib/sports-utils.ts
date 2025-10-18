@@ -1,4 +1,4 @@
-import { ESPNTeam } from '@/types/sports';
+import { ESPNTeam, Play, Drive } from '@/types/sports';
 
 export function getTeamScore(team: ESPNTeam): number {
   if (!team || !team.score) return 0;
@@ -174,4 +174,25 @@ export function getGameStatusColor(status: any): string {
   if (status.type.state === 'in') return 'bg-primary';
   if (status.type.state === 'pre') return 'bg-accent';
   return 'bg-muted';
+}
+
+/**
+ * Extract the last N plays from all drives, with their down/distance information.
+ * Returns plays in chronological order (oldest to newest).
+ */
+export function getLastNPlays(drives?: Drive[], count: number = 3): Play[] {
+  if (!drives || drives.length === 0) {
+    return [];
+  }
+
+  // Collect all plays from all drives
+  const allPlays: Play[] = [];
+  drives.forEach(drive => {
+    if (drive.plays && Array.isArray(drive.plays)) {
+      allPlays.push(...drive.plays);
+    }
+  });
+
+  // Return the last N plays
+  return allPlays.slice(-count);
 }

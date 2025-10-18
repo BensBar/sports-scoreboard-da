@@ -138,6 +138,12 @@ export interface Play {
   team?: {
     id: string;
   };
+  start?: {
+    down?: number;
+    distance?: number;
+    yardLine?: number;
+    yardsToEndzone?: number;
+  };
 }
 
 export interface Drive {

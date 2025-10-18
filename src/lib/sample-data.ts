@@ -180,7 +180,8 @@ export const sampleNFLGames: Game[] = [
               awayScore: 0,
               period: { number: 1 },
               clock: { displayValue: '12:45' },
-              team: { id: 'kc' }
+              team: { id: 'kc' },
+              start: { down: 1, distance: 10, yardLine: 25 }
             },
             {
               id: 'play-2',
@@ -190,7 +191,8 @@ export const sampleNFLGames: Game[] = [
               awayScore: 0,
               period: { number: 1 },
               clock: { displayValue: '12:10' },
-              team: { id: 'kc' }
+              team: { id: 'kc' },
+              start: { down: 2, distance: 2, yardLine: 33 }
             },
             {
               id: 'play-3',
@@ -200,7 +202,8 @@ export const sampleNFLGames: Game[] = [
               awayScore: 0,
               period: { number: 1 },
               clock: { displayValue: '11:35' },
-              team: { id: 'kc' }
+              team: { id: 'kc' },
+              start: { down: 1, distance: 10, yardLine: 48 }
             },
             {
               id: 'play-4',
@@ -210,7 +213,8 @@ export const sampleNFLGames: Game[] = [
               awayScore: 0,
               period: { number: 1 },
               clock: { displayValue: '10:52' },
-              team: { id: 'kc' }
+              team: { id: 'kc' },
+              start: { down: 1, distance: 10, yardLine: 30 }
             },
             {
               id: 'play-5',
@@ -221,7 +225,8 @@ export const sampleNFLGames: Game[] = [
               period: { number: 1 },
               clock: { displayValue: '9:21' },
               scoringPlay: true,
-              team: { id: 'kc' }
+              team: { id: 'kc' },
+              start: { down: 1, distance: 10, yardLine: 12 }
             }
           ]
         },
@@ -250,7 +255,8 @@ export const sampleNFLGames: Game[] = [
               awayScore: 7,
               period: { number: 1 },
               clock: { displayValue: '9:15' },
-              team: { id: 'buf' }
+              team: { id: 'buf' },
+              start: { down: 1, distance: 10, yardLine: 25 }
             },
             {
               id: 'play-7',
@@ -260,7 +266,8 @@ export const sampleNFLGames: Game[] = [
               awayScore: 7,
               period: { number: 1 },
               clock: { displayValue: '8:42' },
-              team: { id: 'buf' }
+              team: { id: 'buf' },
+              start: { down: 1, distance: 10, yardLine: 43 }
             },
             {
               id: 'play-8',
@@ -270,7 +277,8 @@ export const sampleNFLGames: Game[] = [
               awayScore: 7,
               period: { number: 1 },
               clock: { displayValue: '8:10' },
-              team: { id: 'buf' }
+              team: { id: 'buf' },
+              start: { down: 1, distance: 10, yardLine: 45 }
             },
             {
               id: 'play-9',
@@ -281,7 +289,8 @@ export const sampleNFLGames: Game[] = [
               period: { number: 1 },
               clock: { displayValue: '5:09' },
               scoringPlay: true,
-              team: { id: 'buf' }
+              team: { id: 'buf' },
+              start: { down: 2, distance: 1, yardLine: 29 }
             }
           ]
         },
@@ -310,7 +319,8 @@ export const sampleNFLGames: Game[] = [
               awayScore: 7,
               period: { number: 2 },
               clock: { displayValue: '14:45' },
-              team: { id: 'kc' }
+              team: { id: 'kc' },
+              start: { down: 1, distance: 10, yardLine: 18 }
             },
             {
               id: 'play-11',
@@ -320,7 +330,8 @@ export const sampleNFLGames: Game[] = [
               awayScore: 7,
               period: { number: 2 },
               clock: { displayValue: '14:12' },
-              team: { id: 'kc' }
+              team: { id: 'kc' },
+              start: { down: 1, distance: 10, yardLine: 32 }
             },
             {
               id: 'play-12',
@@ -330,7 +341,8 @@ export const sampleNFLGames: Game[] = [
               awayScore: 7,
               period: { number: 2 },
               clock: { displayValue: '13:35' },
-              team: { id: 'kc' }
+              team: { id: 'kc' },
+              start: { down: 1, distance: 10, yardLine: 43 }
             },
             {
               id: 'play-13',
@@ -340,7 +352,8 @@ export const sampleNFLGames: Game[] = [
               awayScore: 7,
               period: { number: 2 },
               clock: { displayValue: '12:48' },
-              team: { id: 'kc' }
+              team: { id: 'kc' },
+              start: { down: 1, distance: 10, yardLine: 30 }
             },
             {
               id: 'play-14',
@@ -351,7 +364,55 @@ export const sampleNFLGames: Game[] = [
               period: { number: 2 },
               clock: { displayValue: '9:17' },
               scoringPlay: true,
-              team: { id: 'kc' }
+              team: { id: 'kc' },
+              start: { down: 1, distance: 10, yardLine: 12 }
+            }
+          ]
+        },
+        {
+          id: 'drive-4',
+          description: 'Current Drive - 3 plays, 21 yards',
+          team: {
+            name: 'Bills',
+            abbreviation: 'BUF'
+          },
+          start: {
+            period: { number: 2 },
+            clock: { displayValue: '9:17' }
+          },
+          plays: [
+            {
+              id: 'play-15',
+              type: { text: 'Pass' },
+              text: 'J. Allen pass incomplete to G. Davis',
+              homeScore: 10,
+              awayScore: 14,
+              period: { number: 2 },
+              clock: { displayValue: '9:10' },
+              team: { id: 'buf' },
+              start: { down: 1, distance: 10, yardLine: 25 }
+            },
+            {
+              id: 'play-16',
+              type: { text: 'Rush' },
+              text: 'J. Cook rush to the left for 9 yards',
+              homeScore: 10,
+              awayScore: 14,
+              period: { number: 2 },
+              clock: { displayValue: '8:52' },
+              team: { id: 'buf' },
+              start: { down: 2, distance: 10, yardLine: 25 }
+            },
+            {
+              id: 'play-17',
+              type: { text: 'Pass' },
+              text: 'J. Allen pass complete to S. Diggs for 12 yards',
+              homeScore: 10,
+              awayScore: 14,
+              period: { number: 2 },
+              clock: { displayValue: '8:45' },
+              team: { id: 'buf' },
+              start: { down: 3, distance: 1, yardLine: 34 }
             }
           ]
         }
