@@ -196,31 +196,3 @@ export function getLastNPlays(drives?: Drive[], count: number = 3): Play[] {
   // Return the last N plays
   return allPlays.slice(-count);
 }
-
-/**
- * Format play information with down/distance and description
- */
-export function formatPlayInfo(play: Play): string {
-  const parts: string[] = [];
-  
-  // Add down and distance if available
-  if (play.start?.down && play.start?.distance !== undefined) {
-    const downDistText = formatDownAndDistance(play.start.down, play.start.distance);
-    if (downDistText) {
-      parts.push(downDistText);
-    }
-  }
-  
-  // Add yard line if available
-  if (play.start?.yardLine !== undefined && play.start?.yardLine !== null) {
-    parts.push(`at ${play.start.yardLine}`);
-  }
-  
-  // Add the play text
-  if (play.text) {
-    const prefix = parts.length > 0 ? `${parts.join(' ')} - ` : '';
-    return `${prefix}${play.text}`;
-  }
-  
-  return parts.join(' ');
-}

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Football, MapPin, Television, Trophy } from '@phosphor-icons/react';
 import { Game, ESPNTeam } from '@/types/sports';
-import { getTeamScore, formatDownAndDistance, formatGameDate, getLastNPlays, formatPlayInfo } from '@/lib/sports-utils';
+import { getTeamScore, formatDownAndDistance, formatGameDate, getLastNPlays } from '@/lib/sports-utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
