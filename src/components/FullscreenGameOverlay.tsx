@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Football, MapPin, Television, Trophy } from '@phosphor-icons/react';
 import { Game, ESPNTeam } from '@/types/sports';
-import { getTeamScore, formatDownAndDistance, formatGameDate } from '@/lib/sports-utils';
+import { getTeamScore, formatDownAndDistance, formatGameDate, getLastNPlays, formatPlayInfo } from '@/lib/sports-utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
@@ -38,6 +38,7 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
   const odds = competition.odds?.[0];
   const leaders = competition.leaders;
   const notes = competition.notes;
+  const drives = competition.drives;
   
   const team1Score = getTeamScore(team1);
   const team2Score = getTeamScore(team2);
@@ -62,6 +63,9 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
   const downDistanceText = formatDownAndDistance(situation?.down, situation?.distance);
   const yardLineText = situation?.yardLine ? ` at ${situation.yardLine}` : '';
   const situationText = downDistanceText ? `${downDistanceText}${yardLineText}` : '';
+
+  // Get last 3 plays for live games
+  const last3Plays = isLive ? getLastNPlays(drives, 3) : [];
 
   const overlayContent = (
     <div 
@@ -120,6 +124,64 @@ export function FullscreenGameOverlay({ game, onClose }: FullscreenGameOverlayPr
           />
         </div>
       </div>
+
+      {/* Last 3 Plays Section - Only for Live Games */}
+      {isLive && last3Plays.length > 0 && (
+        <div className="px-8 py-6 border-t border-white/10 bg-black/30">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-sm text-white/60 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <Football className="w-4 h-4" />
+              Last {last3Plays.length} {last3Plays.length === 1 ? 'Play' : 'Plays'}
+            </div>
+            <div className="space-y-3">
+              {last3Plays.map((play, idx) => (
+                <div 
+                  key={play.id} 
+                  className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors"
+                >
+                  <div className="flex items-start gap-3">
+                    {/* Play Number Badge */}
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-yellow-400/20 text-yellow-400 flex items-center justify-center text-sm font-bold">
+                      {idx + 1}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      {/* Down & Distance */}
+                      {play.start?.down && play.start?.distance !== undefined && (
+                        <div className="text-xs text-white/60 mb-1 font-semibold">
+                          {formatDownAndDistance(play.start.down, play.start.distance)}
+                          {play.start.yardLine !== undefined && play.start.yardLine !== null && (
+                            <span> at {play.start.yardLine}</span>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* Play Description */}
+                      <div className="text-sm text-white/90 leading-relaxed">
+                        {play.text}
+                      </div>
+                      
+                      {/* Game Clock */}
+                      {play.clock?.displayValue && (
+                        <div className="text-xs text-white/50 mt-1">
+                          Q{play.period.number} - {play.clock.displayValue}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Scoring Play Badge */}
+                    {play.scoringPlay && (
+                      <Badge className="bg-yellow-500 text-black text-xs font-bold">
+                        SCORE
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Game Information Section */}
       <div className="px-8 py-6 border-t border-white/10 bg-black/20">
