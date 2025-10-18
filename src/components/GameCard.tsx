@@ -18,9 +18,10 @@ import { FullscreenGameOverlay } from '@/components/FullscreenGameOverlay';
 
 interface GameCardProps {
   game: Game;
+  onRefresh?: () => void;
 }
 
-export function GameCard({ game }: GameCardProps) {
+export function GameCard({ game, onRefresh }: GameCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [showFullscreen, setShowFullscreen] = useState(false);
   
@@ -521,7 +522,8 @@ export function GameCard({ game }: GameCardProps) {
       {showFullscreen && (
         <FullscreenGameOverlay 
           game={game} 
-          onClose={() => setShowFullscreen(false)} 
+          onClose={() => setShowFullscreen(false)}
+          onRefresh={onRefresh}
         />
       )}
     </div>
