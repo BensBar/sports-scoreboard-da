@@ -1,10 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Football, MapPin, Television, Trophy } from '@phosphor-icons/react';
+import { X, Football, MapPin, Television, Trophy, SpeakerHigh, SpeakerSlash } from '@phosphor-icons/react';
 import { Game, ESPNTeam } from '@/types/sports';
 import { getTeamScore, formatDownAndDistance, formatGameDate, getLastNPlays } from '@/lib/sports-utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { playScoreSound, playTurnoverSound, resumeAudioContext } from '@/lib/audio-notifications';
+import { useGameChangeCallbacks } from '@/hooks/use-game-change-detection';
 
 interface FullscreenGameOverlayProps {
   game: Game;
@@ -12,10 +14,11 @@ interface FullscreenGameOverlayProps {
   onRefresh?: () => void;
 }
 
-const REFRESH_INTERVAL_MS = 8000; // 8 seconds
+const REFRESH_INTERVAL_MS = 5000; // 5 seconds
 
 export function FullscreenGameOverlay({ game, onClose, onRefresh }: FullscreenGameOverlayProps) {
   const competition = game.competitions?.[0];
+  const [isMuted, setIsMuted] = useState(false);
   
   // ESC key handler
   useEffect(() => {
@@ -43,6 +46,28 @@ export function FullscreenGameOverlay({ game, onClose, onRefresh }: FullscreenGa
     
     return () => clearInterval(refreshInterval);
   }, [onRefresh]);
+
+  // Initialize audio context on first user interaction
+  useEffect(() => {
+    const initAudio = async () => {
+      await resumeAudioContext();
+    };
+    initAudio();
+  }, []);
+
+  // Game change detection with sound notifications
+  useGameChangeCallbacks(game, {
+    onScoreChange: (scores) => {
+      if (!isMuted) {
+        playScoreSound();
+      }
+    },
+    onTurnover: () => {
+      if (!isMuted) {
+        playTurnoverSound();
+      }
+    },
+  });
 
   if (!competition || competition.competitors.length < 2) {
     return null;
@@ -91,7 +116,26 @@ export function FullscreenGameOverlay({ game, onClose, onRefresh }: FullscreenGa
       onClick={onClose}
     >
       {/* Top Bar */}
-      <div className="flex items-center justify-end px-8 py-6 border-b border-white/10 sticky top-0 bg-black/95 z-10">
+      <div className="flex items-center justify-between px-8 py-6 border-b border-white/10 sticky top-0 bg-black/95 z-10">
+        <div className="flex items-center gap-4">
+          {/* Mute/Unmute Button */}
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-12 w-12 hover:bg-white/10 text-white"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMuted(!isMuted);
+            }}
+            title={isMuted ? 'Unmute audio notifications' : 'Mute audio notifications'}
+          >
+            {isMuted ? (
+              <SpeakerSlash className="w-6 h-6" weight="bold" />
+            ) : (
+              <SpeakerHigh className="w-6 h-6" weight="bold" />
+            )}
+          </Button>
+        </div>
         <Button 
           variant="ghost" 
           size="icon"
@@ -416,7 +460,7 @@ export function FullscreenGameOverlay({ game, onClose, onRefresh }: FullscreenGa
 
       {/* Footer */}
       <div className="px-8 py-4 border-t border-white/10 text-center text-sm text-white/40">
-        Auto-refreshes every 8 seconds • Live game data from ESPN
+        Auto-refreshes every 5 seconds • Audio notifications for scores and turnovers • Live game data from ESPN
       </div>
     </div>
   );

@@ -145,7 +145,7 @@ export function useSportsData(league: League) {
       if (hasLiveGames || games.length === 0) {
         fetchGames();
       }
-    }, 30000); // Refresh every 30 seconds to be more reasonable
+    }, 5000); // Refresh every 5 seconds for live games
     
     return () => clearInterval(interval);
   }, [fetchGames]);
