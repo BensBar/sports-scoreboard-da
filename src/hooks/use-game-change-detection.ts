@@ -78,7 +78,8 @@ export function useGameChangeDetection(game: Game | null): GameChanges {
         ) {
           changes.possessionChanged = true;
           // A turnover is a possession change without a score change
-          // (if there's a score change, it's likely a touchdown/field goal, not a turnover)
+          // Note: This logic may not catch all edge cases like pick-six or fumble return TD
+          // where possession changes AND score changes occur, but those are rare
           if (!changes.scoreChanged) {
             changes.turnoverDetected = true;
           }

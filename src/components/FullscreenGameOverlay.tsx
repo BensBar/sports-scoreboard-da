@@ -59,13 +59,11 @@ export function FullscreenGameOverlay({ game, onClose, onRefresh }: FullscreenGa
   useGameChangeCallbacks(game, {
     onScoreChange: (scores) => {
       if (!isMuted) {
-        console.log('Score changed:', scores);
         playScoreSound();
       }
     },
     onTurnover: () => {
       if (!isMuted) {
-        console.log('Turnover detected');
         playTurnoverSound();
       }
     },
