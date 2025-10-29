@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Game, ESPNResponse } from '@/types/sports';
 import { sampleNFLGames, sampleNCAAFGames } from '@/lib/sample-data';
 
@@ -155,18 +155,23 @@ export function useMultiLeagueData() {
     }
   }, [loadFallbackData]);
 
+  // Use ref to store the latest fetchGames function
+  const fetchGamesRef = useRef(fetchGames);
+  useEffect(() => {
+    fetchGamesRef.current = fetchGames;
+  }, [fetchGames]);
+
   useEffect(() => {
     // Initial data load
-    fetchGames();
+    fetchGamesRef.current();
 
-    // Set up auto-refresh for live games
+    // Set up auto-refresh - uses ref to always call the latest fetchGames
     const interval = setInterval(() => {
-      fetchGames();
+      fetchGamesRef.current();
     }, 5000); // Refresh every 5 seconds
 
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run on mount
+  }, []); // Only run on mount to set up interval
 
   const allGames = [...nflGames, ...ncaafGames];
   
