@@ -4,32 +4,36 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowClockwise, Football, Broadcast } from '@phosphor-icons/react';
 import { GameCard } from '@/components/GameCard';
-import { useSportsData } from '@/hooks/use-sports-data';
-import { useKV } from '@github/spark/hooks';
-import { League } from '@/types/sports';
+import { useCombinedSportsData, ViewMode } from '@/hooks/use-combined-sports-data';
 import { toast } from 'sonner';
 
 export function SportsDashboard() {
-  const [selectedLeague, setSelectedLeague] = useKV<League>('selected-league', 'nfl');
   const [showTop25Only, setShowTop25Only] = useState(false);
-  const currentLeague = selectedLeague || 'nfl';
   
   const { 
     liveGames, 
     upcomingGames, 
     completedGames, 
+    viewMode,
+    setViewMode,
+    hasLiveGames,
     loading, 
     error, 
     lastUpdated, 
-    refresh 
-  } = useSportsData(currentLeague);
+    refresh,
+    counts 
+  } = useCombinedSportsData();
 
-  // Filter function for Top 25 teams
+  // Filter function for Top 25 teams (only applies to NCAA games)
   const filterTop25 = (games: typeof liveGames) => {
-    if (!showTop25Only || currentLeague !== 'college-football') {
+    if (!showTop25Only) {
       return games;
     }
     return games.filter(game => {
+      // Only filter NCAA games
+      if (game.league !== 'college-football') {
+        return true;
+      }
       const competition = game.competitions?.[0];
       if (!competition) return false;
       const competitors = competition.competitors || [];
@@ -45,10 +49,17 @@ export function SportsDashboard() {
   const filteredUpcomingGames = filterTop25(upcomingGames);
   const filteredCompletedGames = filterTop25(completedGames);
 
-  const handleLeagueChange = (league: League) => {
-    setSelectedLeague(league);
-    setShowTop25Only(false); // Reset filter when changing leagues
-    toast.success(`Switched to ${league.toUpperCase()}`);
+  const handleViewModeChange = (mode: ViewMode) => {
+    setViewMode(mode);
+    setShowTop25Only(false); // Reset filter when changing view mode
+    
+    const modeLabels = {
+      live: 'Live Games',
+      all: 'All Games',
+      nfl: 'NFL',
+      ncaaf: 'NCAA Football'
+    };
+    toast.success(`Switched to ${modeLabels[mode]}`);
   };
 
   const handleRefresh = () => {
@@ -76,21 +87,40 @@ export function SportsDashboard() {
           </div>
 
           <div className="flex items-center space-x-4">
-            {/* League Toggle */}
+            {/* View Mode Selector */}
             <div className="flex bg-muted rounded-lg p-1">
+              {hasLiveGames && (
+                <Button
+                  variant={viewMode === 'live' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => handleViewModeChange('live')}
+                  className="text-sm font-medium"
+                >
+                  <Broadcast className="w-4 h-4 mr-1" />
+                  Live ({counts.nfl.live + counts.ncaaf.live})
+                </Button>
+              )}
               <Button
-                variant={currentLeague === 'nfl' ? 'default' : 'ghost'}
+                variant={viewMode === 'all' ? 'default' : 'ghost'}
                 size="sm"
-                onClick={() => handleLeagueChange('nfl')}
+                onClick={() => handleViewModeChange('all')}
+                className="text-sm font-medium"
+              >
+                All
+              </Button>
+              <Button
+                variant={viewMode === 'nfl' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => handleViewModeChange('nfl')}
                 className="text-sm font-medium"
               >
                 <Football className="w-4 h-4 mr-1" />
                 NFL
               </Button>
               <Button
-                variant={currentLeague === 'college-football' ? 'default' : 'ghost'}
+                variant={viewMode === 'ncaaf' ? 'default' : 'ghost'}
                 size="sm"
-                onClick={() => handleLeagueChange('college-football')}
+                onClick={() => handleViewModeChange('ncaaf')}
                 className="text-sm font-medium"
               >
                 <Football className="w-4 h-4 mr-1" />
@@ -98,8 +128,8 @@ export function SportsDashboard() {
               </Button>
             </div>
 
-            {/* Top 25 Filter (only for NCAA) */}
-            {currentLeague === 'college-football' && (
+            {/* Top 25 Filter (only for NCAA games) */}
+            {(viewMode === 'ncaaf' || viewMode === 'all' || (viewMode === 'live' && counts.ncaaf.live > 0)) && (
               <Button
                 variant={showTop25Only ? 'default' : 'outline'}
                 size="sm"
@@ -215,12 +245,14 @@ export function SportsDashboard() {
           <div className="text-center py-12">
             <Football className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">
-              {showTop25Only ? 'No Top 25 Games' : 'No Games Today'}
+              {showTop25Only ? 'No Top 25 Games' : 'No Games Available'}
             </h3>
             <p className="text-muted-foreground">
               {showTop25Only 
                 ? 'No Top 25 ranked teams are playing right now'
-                : `Check back later for upcoming ${currentLeague.toUpperCase()} games`
+                : viewMode === 'live'
+                  ? 'No live games at the moment. Try viewing All, NFL, or NCAAF games.'
+                  : `No games available in the selected view`
               }
             </p>
           </div>
