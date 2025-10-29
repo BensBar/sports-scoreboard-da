@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowClockwise, Football, Broadcast } from '@phosphor-icons/react';
 import { GameCard } from '@/components/GameCard';
 import { useCombinedSportsData, ViewMode } from '@/hooks/use-combined-sports-data';
+import { Game } from '@/types/sports';
 import { toast } from 'sonner';
 
 export function SportsDashboard() {
@@ -25,7 +26,7 @@ export function SportsDashboard() {
   } = useCombinedSportsData();
 
   // Filter function for Top 25 teams (only applies to NCAA games)
-  const filterTop25 = (games: typeof liveGames) => {
+  const filterTop25 = (games: Game[]) => {
     if (!showTop25Only) {
       return games;
     }
@@ -48,6 +49,12 @@ export function SportsDashboard() {
   const filteredLiveGames = filterTop25(liveGames);
   const filteredUpcomingGames = filterTop25(upcomingGames);
   const filteredCompletedGames = filterTop25(completedGames);
+
+  // Determine if Top 25 filter should be shown
+  const shouldShowTop25Filter = 
+    viewMode === 'ncaaf' || 
+    viewMode === 'all' || 
+    (viewMode === 'live' && counts.ncaaf.live > 0);
 
   const handleViewModeChange = (mode: ViewMode) => {
     setViewMode(mode);
@@ -129,7 +136,7 @@ export function SportsDashboard() {
             </div>
 
             {/* Top 25 Filter (only for NCAA games) */}
-            {(viewMode === 'ncaaf' || viewMode === 'all' || (viewMode === 'live' && counts.ncaaf.live > 0)) && (
+            {shouldShowTop25Filter && (
               <Button
                 variant={showTop25Only ? 'default' : 'outline'}
                 size="sm"

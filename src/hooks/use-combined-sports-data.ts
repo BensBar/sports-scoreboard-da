@@ -13,13 +13,11 @@ export function useCombinedSportsData() {
   // Determine if there are any live games across both leagues
   const hasLiveGames = nflData.liveGames.length > 0 || ncaafData.liveGames.length > 0;
 
-  // Auto-switch to 'live' view when live games are detected
+  // Auto-switch to 'live' view when live games are first detected
   useEffect(() => {
-    if (hasLiveGames && viewMode !== 'live') {
-      // Only auto-switch if we're not explicitly viewing a specific league
-      if (viewMode === 'all') {
-        setViewMode('live');
-      }
+    // Auto-switch to live view when games start, unless user has explicitly chosen a specific view
+    if (hasLiveGames && viewMode === 'all') {
+      setViewMode('live');
     }
   }, [hasLiveGames, viewMode]);
 
