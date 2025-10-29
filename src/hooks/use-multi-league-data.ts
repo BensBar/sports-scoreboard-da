@@ -161,18 +161,12 @@ export function useMultiLeagueData() {
 
     // Set up auto-refresh for live games
     const interval = setInterval(() => {
-      const allGames = [...nflGames, ...ncaafGames];
-      const hasLiveGames = allGames.some(game =>
-        game.status && game.status.type && game.status.type.state === 'in'
-      );
-
-      if (hasLiveGames || allGames.length === 0) {
-        fetchGames();
-      }
-    }, 5000); // Refresh every 5 seconds for live games
+      fetchGames();
+    }, 5000); // Refresh every 5 seconds
 
     return () => clearInterval(interval);
-  }, [fetchGames]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
 
   const allGames = [...nflGames, ...ncaafGames];
   

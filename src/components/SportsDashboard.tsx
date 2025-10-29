@@ -57,15 +57,15 @@ export function SportsDashboard() {
       // Show all live games from both leagues
       return {
         live: filterTop25(liveGames),
-        upcoming: [] as Game[],
-        completed: [] as Game[]
+        upcoming: [],
+        completed: []
       };
     } else {
       // Show filtered past games based on league selection
       const filtered = applyLeagueFilter(completedGames);
       return {
-        live: [] as Game[],
-        upcoming: [] as Game[],
+        live: [],
+        upcoming: [],
         completed: filterTop25(filtered)
       };
     }
